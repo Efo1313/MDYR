@@ -160,43 +160,7 @@
             "slug": "fbtv",
             "url": "ttttttttt"
         },
-        {
-            "name": "Film Atölyesi",
-            "slug": "filmatolyesi",
-            "url": "https://www.youtube.com/@FilmAtolyesi/live"
-        },
-        {
-            "name": "FM TV",
-            "slug": "fmtv",
-            "url": "https://www.youtube.com/@FMTV./live"
-        },
-        {
-            "name": "Fox TV",
-            "slug": "foxtv",
-            "url": "https://www.fox.com.tr/canli-yayin"
-        },
-        {
-            "name": "Güldür Güldür",
-            "slug": "guldurguldur",
-            "url": "https://www.youtube.com/@guldurguldurtv/live"
-        },
-        {
-            "name": "Gülşah Film",
-            "slug": "gulsahfilm",
-            "url": "https://www.youtube.com/@GulsahFilmOfficial/live"
-        },
-        {
-            "name": "Haber Ajans Press",
-            "slug": "haberajanspress",
-            "url": "https://www.twitch.tv/haberajanspress"
-        },
-        {
-            "name": "Haber Global",
-            "slug": "haberglobal",
-            "url": "https://www.youtube.com/@haberglobal/live"
-        },
-        {
-            "name": "Habertürk",
+        Habertürk",
             "slug": "haberturk",
             "url": "https://www.youtube.com/@haberturktv/live"
         },
@@ -501,24 +465,9 @@
             "url": "https://www.youtube.com/@CumburlopTV/live"
         },
         {
-            "name": "Nil RTV",
-            "slug": "nilrtv",
-            "url": "https://www.youtube.com/@Nilradyotv/live"
-        },
-        {
-            "name": "bTV",
-            "slug": "bTV",
-            "url": "http://85.11.144.8/archive/2/"
-        },
-        {
             "name": "Aşk-ı Neva",
             "slug": "askineva",
             "url": "https://www.youtube.com/@askineva/live"
-        },
-        {
-            "name": "Van TV",
-            "slug": "vantv",
-            "url": "https://www.twitch.tv/vantvnet"
         },
         {
             "name": "Huzur Pınarı TV",
