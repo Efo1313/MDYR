@@ -16,6 +16,21 @@
             "url": "https://www.youtube.com/@kralmuzik/live"
         },
         {
+            "name": "kral pop",
+            "slug": "kralpop",
+            "url": "https://www.youtube.com/watch?v=5J-w9AHKHsc"
+        },
+        {
+            "name": "kral pop tv",
+            "slug": "kralpoptv",
+            "url": "https://www.youtube.com/watch?v=GuFTuKoXepw&pp=ygUIa3JhbCBwb3A="
+        },
+        {
+            "name": "kral fm",
+            "slug": "kralfm",
+            "url": "https://www.youtube.com/@kralmuzik/live"
+        },
+        {
             "name": "ABB TV",
             "slug": "abbtv",
             "url": "https://www.youtube.com/@ankarabbld/live"
