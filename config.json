@@ -162,192 +162,42 @@
         },
         Habertürk",
             "slug": "haberturk",
-            "url": "https://www.youtube.com/@haberturktv/live"
+            "url": "xxxxxxxx"
         },
         {
             "name": "Hanım Köylü",
             "slug": "hanimkoylu",
-            "url": "https://www.youtube.com/@HanimKoyluDizi/live"
+            "url": "xxxxxxxx"
         },
         {
             "name": "Hayat Bazen Tatlıdır",
             "slug": "hayatbazentatlidir",
-            "url": "https://www.youtube.com/@HayatBazenTatlidir/live"
+            "url": "xxxxxxxx"
         },
         {
             "name": "Hürtürk TV",
             "slug": "hurturktv",
-            "url": "https://www.twitch.tv/hurturktv"
+            "url": "xxxxxxxx"
         },
         {
             "name": "Hz. Yusuf",
             "slug": "hzyusuf",
-            "url": "https://www.youtube.com/@HzYusufDizisi/live"
+            "url": "xxxxxxxx"
         },
         {
             "name": "Jet Sosyete",
             "slug": "jetsosyete",
-            "url": "https://www.youtube.com/@jetsosyete/live"
+            "url": "xxxxxxxx"
         },
         {
             "name": "Kalbimin Sultanı",
             "slug": "kalbiminsultani",
-            "url": "https://www.youtube.com/@kalbiminsultanidizi/live"
+            "url": "xxxxxxxx"
         },
         {
             "name": "Kanal 5",
             "slug": "kanal5",
-            "url": "http://youtube.com/channel/UCVebw64Db0yhrPkVk-D8F6w/live"
-        },
-        {
-            "name": "Kanal 7 Avrupa",
-            "slug": "kanal7avrupa",
-            "url": "https://www.dailymotion.com/video/x8863vn"
-        },
-        {
-            "name": "Karadeniz Akustik",
-            "slug": "karadenizakustik",
-            "url": "https://www.youtube.com/@karadenizakustik/live"
-        },
-        {
-            "name": "Kemal Sunal Filmleri",
-            "slug": "kemalsunalfilmleri",
-            "url": "https://www.youtube.com/@KemalSunalFilmleriveSahneleri/live"
-        },
-        {
-            "name": "Kiralık Aşk",
-            "slug": "kiralikask",
-            "url": "https://www.youtube.com/@KiralikAsk/live"
-        },
-        {
-            "name": "Köy TV",
-            "slug": "koytv",
-            "url": "https://www.youtube.com/@koytvofficial/live"
-        },
-        {
-            "name": "KRT TV",
-            "slug": "krttv",
-            "url": "https://www.youtube.com/@KRTCANLI/live"
-        },
-        {
-            "name": "Kurtlar Vadisi",
-            "slug": "kurtlarvadisi",
-            "url": "https://www.youtube.com/@KurtlarVadisiOfficial/live"
-        },
-        {
-            "name": "Kurt Seyit ve Şura",
-            "slug": "kurtseyitvesura",
-            "url": "https://www.youtube.com/@kurtseyitsura/live"
-        },
-        {
-            "name": "Kuzey TV",
-            "slug": "kuzeytv",
-            "url": "https://www.twitch.tv/kuzeytvtv"
-        },
-        {
-            "name": "Kuzey Yıldızı İlk Aşk",
-            "slug": "kuzeyyildizi",
-            "url": "https://www.youtube.com/@KuzeyYildiziDizi/live"
-        },
-        {
-            "name": "Lider Haber",
-            "slug": "liderhaber",
-            "url": "https://www.youtube.com/@liderhabertv/live"
-        },
-        {
-            "name": "Milli Piyango TV",
-            "slug": "millipiyangotv",
-            "url": "https://www.youtube.com/@MilliPiyangoTV/live"
-        },
-        {
-            "name": "MPL TV",
-            "slug": "mpltv",
-            "url": "https://www.youtube.com/@mpl_tv/live"
-        },
-        {
-            "name": "Malkoçoğlu",
-            "slug": "muratfilm",
-            "url": "https://www.youtube.com/@MuratFilm/live"
-        },
-        {
-            "name": "NTV",
-            "slug": "ntv",
-            "url": "https://www.youtube.com/@NTV/live"
-        },
-        {
-            "name": "Nur TV",
-            "slug": "nurtv",
-            "url": "https://www.youtube.com/@nurtv_yayin/live"
-        },
-        {
-            "name": "Ramo",
-            "slug": "ramo",
-            "url": "https://www.youtube.com/@ramo/live"
-        },
-        {
-            "name": "Safa TV",
-            "slug": "safatv",
-            "url": "https://www.twitch.tv/safatv95"
-        },
-        {
-            "name": "Semerkand TV",
-            "slug": "semerkandtv",
-            "url": "https://www.youtube.com/@semerkandtv/live"
-        },
-        {
-            "name": "Serhat TV",
-            "slug": "serhattv",
-            "url": "https://www.twitch.tv/serhattvlive"
-        },
-        {
-            "name": "Show Max",
-            "slug": "showmax",
-            "url": "http://showmax.com.tr/canliyayin"
-        },
-        {
-            "name": "Show Türk",
-            "slug": "showturk",
-            "url": "https://www.showturk.com.tr/canli-yayin/showturk"
-        },
-        {
-            "name": "Sihirli Annem",
-            "slug": "sihirliannem",
-            "url": "https://www.youtube.com/@SihirliAnnemDizi/live"
-        },
-        {
-            "name": "Şirinler",
-            "slug": "sirinler",
-            "url": "https://www.youtube.com/@sirinler/live"
-        },
-        {
-            "name": "Sözcü TV",
-            "slug": "sozcutv",
-            "url": "https://www.youtube.com/@Sozcutelevizyonu/live"
-        },
-        {
-            "name": "Tele 1",
-            "slug": "tele1",
-            "url": "https://www.youtube.com/@Tele1comtr/live"
-        },
-        {
-            "name": "TGRT Haber",
-            "slug": "tgrthaber",
-            "url": "https://www.youtube.com/@tgrthaber/live"
-        },
-        {
-            "name": "Trabzon TV",
-            "slug": "trabzontv",
-            "url": "https://www.twitch.tv/trabzontv"
-        },
-        {
-            "name": "TRT 1",
-            "slug": "trt1",
-            "url": "https://www.youtube.com/@trt1/live"
-        },
-        {
-            "name": "TRT Haber",
-            "slug": "trthaber",
-            "url": "https://www.youtube.com/@trthaber/live"
+            "url": "xxxxxxxx"
         },
         {
             "name": "Zeki & Metin",
