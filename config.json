@@ -6,11 +6,6 @@
     },
     "channels": [
         {
-            "name": "24 TV",
-            "slug": "24tv",
-            "url": "xxxxxx"
-        },
-        {
             "name": "kral fm",
             "slug": "kralfm",
             "url": "https://www.youtube.com/@kralmuzik/live"
