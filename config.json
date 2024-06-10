@@ -229,16 +229,7 @@
             "name": "Yeni Gelin",
             "slug": "yenigelin",
             "url": "xxxxxxxxx"
-        },
-        {
-            "name": "Aşk-ı Neva",
-            "slug": "askineva",
-            "url": "https://www.youtube.com/@askineva/live"
-        },
-        {
-            "name": "Huzur Pınarı TV",
-            "slug": "huzurpinari",
-            "url": "https://www.youtube.com/@HuzurPinariTV/live"
+        }
         }
     ]
 }
