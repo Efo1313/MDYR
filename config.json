@@ -106,6 +106,201 @@
             "url": "https://m.youtube.com/watch?v=uyfg4hXTn4Y"
         },
         {
+            "name": "Çilek Kokusu",
+            "slug": "cilekkokusu",
+            "url": "https://www.youtube.com/c/ÇilekKokusu/live"
+        },
+        {
+            "name": "Geniş Aile",
+            "slug": "genisaile",
+            "url": "https://m.youtube.com/@GenisAileDizi/live"
+        },
+        {
+            "name": "Gülşah",
+            "slug": "gulsah",
+            "url": "https://www.youtube.com/@GulsahFilmOfficial/live"
+        },
+        {
+            "name": "Dolunay",
+            "slug": "dolunay",
+            "url": "https://m.youtube.com/@Dolunay/live"
+        },
+        {
+            "name": "DOKTORLAR",
+            "slug": "doktorlar",
+            "url": "https://m.youtube.com/DoktorlarDizisi/live"
+        },
+        {
+            "name": "İstanbullu Gelin",
+            "slug": "istanbullugelin",
+            "url": "https://m.youtube.com/@istanbullugelindizi/live"
+        },
+        {
+            "name": "İnci Taneleri",
+            "slug": "incitaneleri",
+            "url": "https://m.youtube.com/@incitaneleribkm/live"
+        },
+        {
+            "name": "İşler Güçler",
+            "slug": "islergucler",
+            "url": "https://m.youtube.com/@islerGuclerDizi/live"
+        },
+        {
+            "name": "İki Aile",
+            "slug": "ikiaile",
+            "url": "https://m.youtube.com/@ikiaile/live"
+        },
+        {
+            "name": "Kara Sevda",
+            "slug": "karasevda",
+            "url": "https://m.youtube.com/@KaraSevdaTv/live"
+        },
+        {
+            "name": "Kardeşlerim 1",
+            "slug": "kardeslerim1",
+            "url": "https://m.youtube.com/watch?v=I28tiL_cAeU"
+        },
+        {
+            "name": "Kardeşlerim 2",
+            "slug": "kardeslerim2",
+            "url": "https://m.youtube.com/watch?v=qs1qNlelaqc"
+        }, 
+        {
+            "name": "Kardeşlerim 3",
+            "slug": "kardeslerim3",
+            "url": "https://m.youtube.com/watch?v=flROBypX2Pc"
+        }, 
+        {
+            "name": "Kardeşlerim 4",
+            "slug": "kardeslerim4",
+            "url": "https://m.youtube.com/watch?v=cnt7pNT_iVU"
+        }, 
+        {
+            "name": "Kemal Sunal",
+            "slug": "kemalsunal",
+            "url": "https://m.youtube.com/@KemalSunalFilmleriveSahneleri/live"
+        },
+        {
+            "name": "Kiralık Aşk",
+            "slug": "kiralıkask",
+            "url": "https://m.youtube.com/@KiralikAsk/live"
+        },
+        {
+            "name": "Kuzey Yıldızı",
+            "slug": "kuzeyyıldızı",
+            "url": "https://m.youtube.com/@KuzeyYildiziDizi/live"
+        },
+        {
+            "name": "Kuzey Güney",
+            "slug": "kuzeyguney",
+            "url": "https://m.youtube.com/@KUZEYGUNEYKANALDOFFICIAL"
+        },
+        {
+            "name": "Kuzgun",
+            "slug": "kuzgun",
+            "url": "https://m.youtube.com/@Kuzgun/live"
+        },
+        {
+            "name": "Kurtlar Vadisi",
+            "slug": "kurtlarvadisi",
+            "url": "https://m.youtube.com/@KurtlarVadisiOfficial/live"
+        },
+        {
+            "name": "Kuruluş Osman",
+            "slug": "kurulusosman",
+            "url": "https://m.youtube.com/watch?v=zo34yn5gKmA"
+        },
+        {
+            "name": "Kısmetse Olur",
+            "slug": "kısmetseolur",
+            "url": "https://m.youtube.com/@kismetseoluraskingucuOfficial/live"
+        },
+        {
+            "name": "Meleklerin Aşkı",
+            "slug": "meleklerinaskı",
+            "url": "https://m.youtube.com/@meleklerinaski/live"
+        },
+        {
+            "name": "Muhteşem Yüzyıl",
+            "slug": "muhtesemyuzyıl",
+            "url": "https://m.youtube.com/watch?v=oiW5lxL6RzM"
+        },
+        {
+            "name": "Mucize Doktor",
+            "slug": "mucizedoktor",
+            "url": "https://m.youtube.com/@MucizeDoktor/live"
+        },
+        {
+            "name": "Fatmagülün Suçu Ne",
+            "slug": "fatmagulunsucune",
+            "url": "https://m.youtube.com/watch?v=B99h3vvUIyU"
+        },
+        {
+            "name": "Fazilet Hanım ve Kızları",
+            "slug": "fazilethanimvekızları",
+            "url": "https://m.youtube.com/@fazilethanimvekizlaridizi/live"
+        },
+        {
+            "name": "Hanım Köylü",
+            "slug": "hanımkoylu",
+            "url": "https://m.youtube.com/@HanimKoyluDizi/live"
+        },
+        {
+            "name": "Hayat Şarkısı",
+            "slug": "hayatsarkısı",
+            "url": "https://m.youtube.com/@MostProductionOfficial/live"
+        },
+        {
+            "name": "Hayat Bazen Tatlıdır",
+            "slug": "hayatbazentatlidir",
+            "url": "https://m.youtube.com/@HayatBazenTatlidir/live"
+        },
+        {
+            "name": "Seferin Kızı",
+            "slug": "seferinkızı",
+            "url": "https://m.youtube.com/@sefirinkizidizi/live"
+        },
+        {
+            "name": "Selena",
+            "slug": "selena",
+            "url": "https://m.youtube.com/@SelenaDizi/live"
+        },
+        {
+            "name": "Sihirli Annem",
+            "slug": "hirliannem",
+            "url": "https://m.youtube.com/@SihirliAnnemDizi/live"
+        },
+        {
+            "name": "Çilek Kokusu",
+            "slug": "cilekkokusu",
+            "url": "https://m.youtube.com/c/ÇilekKokusu/live"
+        },
+        {
+            "name": "Ufak Tefek Cinaetler",
+            "slug": "ufaktefekcinaetler",
+            "url": "https://m.youtube.com/channel/UCYpbJJdypj-c8uqUqKg3euw/about/live"
+        },
+        {
+            "name": "Üç Kuruş",
+            "slug": "uckurus",
+            "url": "https://m.youtube.com/c/ÜçKuruşDizi/live"
+        },
+        {
+            "name": "Yaprak Dökümü",
+            "slug": "yaprakdokumu",
+            "url": "https://m.youtube.com/@YaprakDokumuKanalD/live"
+        },
+        {
+            "name": "Yeni Gelin",
+            "slug": "yenigelin",
+            "url": "https://m.youtube.com/@yenigelindizi/live"
+        },
+        {
+            "name": "Radyo Rap MIX",
+            "slug": "radyo44",
+            "url": "https://m.youtube.com/@radyo44canli/live"
+        },
+        {
             "name": "Alev Alev",
             "slug": "alevalev",
             "url": "xcxxxx"
