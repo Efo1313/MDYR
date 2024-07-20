@@ -491,9 +491,9 @@
             "url": "xxxxxxxxx"
         },
         {
-            "name": "Yeni Gelin",
-            "slug": "yenigelin",
-            "url": "xxxxxxxxx"
+            "name": "NOVA NEWS",
+            "slug": "bgnovanews",
+            "url": "https://nova.bg/live/news/live"
         }
     ]
 }
