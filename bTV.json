@@ -1,0 +1,14 @@
+{
+    "output": {
+        "folder": "ch",
+        "bestFolder": "best",
+        "masterFolder": ""
+    },
+    "channels": [
+        {
+            "name": "bTV",
+            "slug": "bTV",
+            "url": "https://btvplus.bg/live/"
+        }
+    ]
+}
