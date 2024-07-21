@@ -1,4 +1,4 @@
-name: Show
+name: NovaTV
 on:
   schedule:
     - cron: '16 */02 * * *'
