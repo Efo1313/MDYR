@@ -19,7 +19,7 @@ jobs:
       - name: config
         run: |
           git config --global user.email "<>"
-          git config --global user.name "Show bot"
+          git config --global user.name "NovaTV bot"
 
       - name: Set up Python
         uses: actions/setup-python@v2
