@@ -2,7 +2,7 @@ import requests
 import re
 import json
 
-base_url = "https://cdn.bweb.bg/live/68wVsoUZYWzooYhfncrhXw/1721606041/61065646_low.m3u8"
+base_url = "https://cdn.bweb.bg/live"
 url = "https://btvplus.bg/live/"
 response = requests.get(url)
 
