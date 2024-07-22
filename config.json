@@ -476,9 +476,9 @@
             "url": "xxxxxxxxx"
         },
         {
-            "name": "Ülke TV",
-            "slug": "ulketv",
-            "url": "xxxxxxxx"
+            "name": "Nova TV",
+            "slug": "bgNovatv",
+            "url": "https://nova.bg/live"
         },
         {
             "name": "bTV",
