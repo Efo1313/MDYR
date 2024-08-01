@@ -481,6 +481,11 @@
             "url": "https://nova.bg/live"
         },
         {
+            "name": "Nova TV HD",
+            "slug": "bgNovatvhd",
+            "url": "https://play.nova.bg/live/nova-play"
+        },
+        {
             "name": "bTV",
             "slug": "bTV",
             "url": "https://btvplus.bg/live/"
