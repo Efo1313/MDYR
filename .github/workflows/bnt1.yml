@@ -1,4 +1,4 @@
-name: bTV
+name: bnt1
 on:
   schedule:
     - cron: '16 */02 * * *'
@@ -19,7 +19,7 @@ jobs:
       - name: config
         run: |
           git config --global user.email "<>"
-          git config --global user.name "bTV bot"
+          git config --global user.name "bnt1 bot"
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -34,7 +34,7 @@ jobs:
         run: python3 -m pip install requests
 
       - name: Execute Python script
-        run: python3 py/bTV.py > ch/bTV.m3u8
+        run: python3 py/bnt1.py > ch/bnt1.m3u8
 
       - name: git add
         run: |
