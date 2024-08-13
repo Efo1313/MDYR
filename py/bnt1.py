@@ -2,25 +2,25 @@ import requests
 import re
 import json
 
-base_url = "https://vd7.bweb.bg/live/BuCGRKbBwyJtLc82a5evQQ/1722018757/61065646_low.m3u8"
-url = "https://btvplus.bg/live/"
+base_url = "http://85.11.144.8/archive/1932/20240813-12.mpg"
+url = "http://85.11.144.8/archive/1932/"
 response = requests.get(url)
 
 if response.status_code == 200:
     site_content = response.text
-    match = re.search(r'ht_stream_m3u8":"(.*?)"', site_content)
+    match = re.search(r'ht_stream_mpg":"(.*?)"', site_content)
     
     if match:
         json_data = match.group(1)
         json_data_valid = json_data.replace("\\/", "/")  # Replace escaped slashes
         
         try:
-            ht_data = json.loads('{"ht_stream_m3u8":"' + json_data_valid + '"}')
-            ht_stream_m3u8 = ht_data.get('ht_stream_m3u8')
+            ht_data = json.loads('{"ht_stream_mpg":"' + json_data_valid + '"}')
+            ht_stream_mpg = ht_data.get('ht_stream_mpg')
             
-            if ht_stream_m3u8:
-                #print(f"Found Live URL: {ht_stream_m3u8}")
-                content_response = requests.get(ht_stream_m3u8)
+            if ht_stream_mpg:
+                #print(f"Found Live URL: {ht_stream_mpg}")
+                content_response = requests.get(ht_stream_mpg)
                 
                 if content_response.status_code == 200:
                     content = content_response.text
@@ -28,7 +28,7 @@ if response.status_code == 200:
                     modified_content = ""
                     
                     for line in lines:
-                        if line.startswith("bTV"):
+                        if line.startswith("bnt1"):
                             full_url = base_url + line
                             modified_content += full_url + "\n"
                         else:
