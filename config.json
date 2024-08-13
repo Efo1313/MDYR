@@ -471,14 +471,14 @@
             "url": "xxxxxxxx"
         },
         {
-            "name": "tv100",
-            "slug": "tv100",
-            "url": "xxxxxxxxx"
+            "name": "bnt 1 TV",
+            "slug": "bnt1tv",
+            "url": "http://85.11.144.8/archive/1932"
         },
         {
-            "name": "TVNET",
-            "slug": "tvnet",
-            "url": "xxxxxxxxx"
+            "name": "bnt 1",
+            "slug": "bnt1",
+            "url": "http://85.11.144.8/archive/1932/20240813-12.mpg"
         },
         {
             "name": "Nova TV",
