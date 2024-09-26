@@ -3,7 +3,7 @@ import re
 import json
 
 base_url = "http://85.11.144.8/archive/1932/"
-url = "http://85.11.144.8/archive/1932/20240813-12.mpg"
+url = "https://www.seir-sanduk.com/bnt-1-hd-online"
 response = requests.get(url)
 
 if response.status_code == 200:
