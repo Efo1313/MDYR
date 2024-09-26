@@ -8,19 +8,19 @@ response = requests.get(url)
 
 if response.status_code == 200:
     site_content = response.text
-    match = re.search(r'ht_stream_mpg":"(.*?)"', site_content)
+    match = re.search(r'ht_stream_m3u8":"(.*?)"', site_content)
     
     if match:
         json_data = match.group(1)
         json_data_valid = json_data.replace("\\/", "/")  # Replace escaped slashes
         
         try:
-            ht_data = json.loads('{"ht_stream_mpg":"' + json_data_valid + '"}')
+            ht_data = json.loads('{"ht_stream_m3u8":"' + json_data_valid + '"}')
             ht_stream_mpg = ht_data.get('ht_stream_mpg')
             
-            if ht_stream_mpg:
+            if ht_stream_m3u8:
                 #print(f"Found Live URL: {ht_stream_mpg}")
-                content_response = requests.get(ht_stream_mpg)
+                content_response = requests.get(ht_stream_m3u8)
                 
                 if content_response.status_code == 200:
                     content = content_response.text
