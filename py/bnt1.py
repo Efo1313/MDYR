@@ -2,7 +2,7 @@ import requests
 import re
 import json
 
-base_url = "https://cdn4.gledam.xyz/hls/hd-btv-hd/index.m3u8?e=1727331820&hash=KNzPHguVT2F0O7DsmgdXQw"
+base_url = "https://cdn4.gledam.xyz/hls/hd-btv-hd"
 url = "https://www.seir-sanduk.com/bnt-1-hd-online"
 response = requests.get(url)
 
