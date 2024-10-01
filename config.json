@@ -471,6 +471,11 @@
             "url": "xxxxxxxx"
         },
         {
+            "name": "BNT 1B TV",
+            "slug": "BNT1b",
+            "url": "https://bul-tv.com/bnt1"
+        },
+        {
             "name": "bnt 1 TV",
             "slug": "bnt1tv",
             "url": "https://www.seir-sanduk.com/bnt-1-hd-online"
