@@ -2,7 +2,7 @@ import requests
 import re
 import json
 
-base_url = "https://w2.btstream.xyz:51996/tv/diema/chunks.m3u8"
+base_url = "https://w2.btstream.xyz:51996/tv/diema/chunks.m3u8?nimblesessionid=33754662&wmsAuthSign=c2VydmVyX3RpbWU9MTAvNi8yMDI0IDEwOjEzOjMxIFBNJmhhc2hfdmFsdWU9Y29HMUVPV1ZCMW5Xa0lqWnNodWIxdz09JnZhbGlkbWludXRlcz02MA=="
 url = "https://bul-tv.com/diema-online"
 response = requests.get(url)
 
