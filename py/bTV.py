@@ -2,7 +2,7 @@ import requests
 import re
 import json
 
-base_url = "https://ciner-live.ercdn.net/showmax/"
+base_url = "https://mx86.glebul.com/hlsfhd/hd-btv-hd_hd1080/"
 url = "https://www.seir-sanduk.com/btv-hd-online?player=1&id=hd-btv-hd&pass="
 response = requests.get(url)
 
