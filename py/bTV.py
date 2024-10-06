@@ -3,7 +3,7 @@ import re
 import json
 
 base_url = "https://ciner-live.ercdn.net/showmax/"
-url = "http://www.showmax.com.tr/canliyayin"
+url = "https://www.seir-sanduk.com/btv-hd-online?player=1&id=hd-btv-hd&pass="
 response = requests.get(url)
 
 if response.status_code == 200:
