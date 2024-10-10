@@ -511,6 +511,11 @@
             "url": "https://www.apara.com.tr/canli-yayin"
         },
         {
+            "name": "DİEMA TV",
+            "slug": "diema",
+            "url": "https://www.gledaitv.live/watch-tv/13/diema-sport-online"
+        },
+        {
             "name": "TİVİBU",
             "slug": "tivibu1",
             "url": "https://macvar5374.live/tv/tivibu-spor-hd/"
