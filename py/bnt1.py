@@ -3,7 +3,7 @@ import re
 import json
 
 base_url = "https://cdn4.gledam.xyz/hls/hd-btv-hd"
-url = "https://www.seir-sanduk.com/bnt-1-hd-online"
+url = "https://seirsanduk.online/?player=2&id=hd-btv-hd&pass="
 response = requests.get(url)
 
 if response.status_code == 200:
