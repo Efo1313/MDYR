@@ -2,48 +2,52 @@ import cloudscraper
 import re
 import os
 
-def generate_m3u():
-    # 1. Cloudflare korumasını aşmak için scraper oluştur
+def guncelle():
+    # 1. Ayarlar
+    GIRIS_URL = "https://www.seir-sanduk.com/linkzagledane.php?parola=FaeagaDs3AdKaAf9"
+    WORKER_URL = "https://tv.seirsanduk.workers.dev/?ID="
+    BASE_URL = "https://www.seir-sanduk.com/"
+    
     scraper = cloudscraper.create_scraper()
     
-    # Giriş linki
-    login_url = "https://www.seir-sanduk.com/linkzagledane.php?parola=FaeagaDs3AdKaAf9"
-    
     try:
-        # 2. Siteye git ve yönlendirildiği güncel adresi al
-        response = scraper.get(login_url, timeout=15)
-        current_url = response.url
-        print(f"Giris yapildi: {current_url}")
+        # 2. Şifreyi (Token) Al
+        print("Siteye giriş yapılıyor...")
+        response = scraper.get(GIRIS_URL, timeout=20)
+        # Yönlendirilen son URL'den pass parametresini çek
+        token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url)
         
-        # 3. URL içindeki 'pass=' değerini ayıkla
-        token_match = re.search(r'pass=([a-zA-Z0-9]+)', current_url)
         if not token_match:
-            print("Hata: Token (pass) bulunamadi!")
+            print("Hata: Şifre (pass) bulunamadı. Site yapısı değişmiş olabilir.")
             return
-        
+            
         token = token_match.group(1)
-        
-        # 4. kanallar.txt dosyasını oku ve m3u oluştur
+        print(f"Güncel Şifre Alındı: {token}")
+
+        # 3. Kanalları Oku ve M3U Oluştur
         if not os.path.exists("kanallar.txt"):
-            print("Hata: kanallar.txt dosyasi bulunamadi!")
+            print("Hata: kanallar.txt dosyası bulunamadı!")
             return
 
         with open("kanallar.txt", "r", encoding="utf-8") as f:
-            lines = f.readlines()
+            kanallar = f.readlines()
 
         with open("liste.m3u", "w", encoding="utf-8") as m3u:
             m3u.write("#EXTM3U\n")
-            for line in lines:
-                if ":" in line:
-                    name, slug = line.strip().split(": ")
-                    # M3U formatında yaz
-                    m3u.write(f"#EXTINF:-1,{name}\n")
-                    m3u.write(f"https://www.seir-sanduk.com/{slug}?pass={token}\n")
+            
+            for satir in kanallar:
+                if ":" in satir:
+                    kanal_adi, slug = satir.strip().split(": ")
+                    # Tam linki oluştur: Worker + Site + Slug + Pass
+                    final_link = f"{WORKER_URL}{BASE_URL}{slug}?pass={token}"
+                    
+                    m3u.write(f"#EXTINF:-1,{kanal_adi}\n")
+                    m3u.write(f"{final_link}\n")
         
-        print("liste.m3u başarıyla güncellendi.")
+        print("İşlem Başarılı: liste.m3u güncellendi.")
 
     except Exception as e:
-        print(f"Bir hata olustu: {e}")
+        print(f"Beklenmedik bir hata oluştu: {e}")
 
 if __name__ == "__main__":
-    generate_m3u()
+    guncelle()
