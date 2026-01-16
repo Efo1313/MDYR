@@ -2,31 +2,29 @@ name: Sifre Guncelleyici
 
 on:
   schedule:
-    - cron: '0 * * * *' # Her saat başı çalışır
-  workflow_dispatch: # İstediğinde elle başlatman için
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Kodları Çek
-        uses: actions/checkout@v2
+      - name: Kodlari Cek
+        uses: actions/checkout@v4
 
       - name: Python Kur
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Kütüphaneleri Kur
+      - name: Kutupahaneleri Kur
         run: pip install requests beautifulsoup4
 
-      - name: Kodu Çalıştır
-        run: python Main.py
+      - name: Dosyalari Kontrol Et
+        run: ls -R  # Bu komut hata olursa dosyaları listeler, sorunu anlarız
 
-      - name: Değişiklikleri Kaydet
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Şifre güncellendi" || exit 0
-          git push
+      - name: Kodu Calistir
+        run: python Main.py  # M harfini büyük yaptık
