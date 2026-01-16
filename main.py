@@ -2,40 +2,40 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-def sifreyi_al():
-    # Şifrenin yayınlandığı ana sayfa veya şifre alma sayfası
-    url = "https://www.seir-sanduk.com/" 
+def guncel_sifreyi_getir():
+    # Seir Sanduk ana sayfası
+    url = "https://www.seir-sanduk.com/"
     
+    # Telefon tarayıcısı gibi görünmek için başlık (User-Agent)
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36'
     }
 
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status() # Bağlantı hatası varsa uyarır
-        
-        # Sayfa içeriğini analiz et
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # YÖNTEM A: Şifre bir input içindeyse (Örn: <input id="pass" value="...">)
-        # Sitedeki doğru ID'yi bulmanız gerekir
-        pass_element = soup.find('input', {'id': 'pass'}) 
-        
-        if pass_element:
-            return pass_element['value']
-        
-        # YÖNTEM B: Şifre metin içindeyse (Düzenli ifade ile arama)
-        # Genellikle 32 karakterli karmaşık bir dizin olur
-        match = re.search(r'pass=([a-zA-Z0-9]{20,})', response.text)
-        if match:
-            return match.group(1)
+    print("Siteye bağlanılıyor ve şifre aranıyor...")
 
-        return "Şifre bulunamadı, sitenin HTML yapısı değişmiş olabilir."
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        # 1. Yöntem: Linklerin içindeki pass= parametresini ara
+        # Örnek: ?pass=11kalAdKaAde11sF8F...
+        match = re.search(r'pass=([a-zA-Z0-9]+)', response.text)
+        
+        if match:
+            sifre = match.group(1)
+            tam_link = f"https://www.seir-sanduk.com/?pass={sifre}"
+            
+            print("\n" + "="*30)
+            print(f"BAŞARILI! GÜNCEL ŞİFRE: {sifre}")
+            print(f"TAM LİNK: {tam_link}")
+            print("="*30)
+            print("\nBu linki kopyalayıp IPTV uygulamanıza (Televizo vb.) yapıştırabilirsiniz.")
+            
+        else:
+            print("HATA: Sayfa içinde şifre bulunamadı. Site yapısı değişmiş olabilir.")
 
     except Exception as e:
-        return f"Hata oluştu: {e}"
+        print(f"Bağlantı hatası oluştu: {e}")
 
-# Kullanım
-guncel_pass = sifreyi_al()
-print(f"Güncel Şifreniz: {guncel_pass}")
-print(f"Tam Link: https://www.seir-sanduk.com/?pass={guncel_pass}")
+if __name__ == "__main__":
+    guncel_sifreyi_getir()
