@@ -1,44 +1,34 @@
-import cloudscraper
-import re
+import os
 
-def guncel_liste_olustur():
-    # Şifreyi üreten gizli adres
-    sifre_kaynagi = "https://www.seir-sanduk.com/linkzagledane.php?parola=FaeagaDs3AdKaAf9"
-    scraper = cloudscraper.create_scraper()
+def liste_olustur():
+    # Şifre otomatik yönetildiği için buraya sabit şifre yazmamıza gerek kalmayabilir
+    # Ama biz yine de en son çalışan şifreyi ekleyelim
+    sifre = "11kalAdKaAde11sF8F01011616011601"
+    
+    # Tüm TV kanallarının ID listesi
+    kanallar = [
+        {"ad": "BNT 1 HD", "id": "hd-bnt-1-hd"},
+        {"ad": "BTV HD", "id": "hd-btv-hd"},
+        {"ad": "NOVA TV HD", "id": "nova-tv-hd"},
+        {"ad": "DIEMA SPORT HD", "id": "diema-sport-hd"},
+        {"ad": "DIEMA SPORT 2 HD", "id": "diema-sport-2-hd"},
+        {"ad": "MAX SPORT 1 HD", "id": "max-sport-1-hd"},
+        {"ad": "MAX SPORT 2 HD", "id": "max-sport-2-hd"},
+        {"ad": "HBO HD", "id": "hbo-hd-bg"}
+    ]
 
-    try:
-        # 1. Şifreyi çek
-        response = scraper.get(sifre_kaynagi)
-        # Linkin içinden pass= kısmından sonrasını yakala
-        match = re.search(r'pass=([a-zA-Z0-9]+)', response.text)
-        
-        if match:
-            sifre = match.group(1)
-            print(f"Yeni Şifre Bulundu: {sifre}")
+    m3u_icerik = "#EXTM3U\n"
+    
+    for k in kanallar:
+        # Senin paylaştığın workers yapısını kullanarak link oluşturuyoruz
+        # Bu yapı şifre patlasa bile yönlendirme sayesinde yayını korumaya çalışır
+        link = f"http://tv.seirsanduk.workers.dev/?ID=https%3A%2F%2Fwww.seir-sanduk.com%2F%3Fplayer%3D11%26id%3D{k['id']}%26pass%3D{sifre}"
+        m3u_icerik += f"#EXTINF:-1,{k['ad']}\n{link}\n"
 
-            # 2. Kanal listesini hazırla
-            kanal_idleri = [
-                "hd-btv-hd", "btv-action-hd", "btv-cinema-hd", "btv-comedy-hd", "btv-story-hd", "ring-hd",
-                "nova-tv-hd", "diema-hd", "diema-family-hd", "kinonova-hd", "nova-sport-hd",
-                "diema-sport-hd", "diema-sport-2-hd", "diema-sport-3-hd", "max-sport-1-hd", 
-                "max-sport-2-hd", "max-sport-3-hd", "max-sport-4-hd", "bnt-1-hd", "bnt-2-hd", "hbo-hd-bg"
-            ]
-
-            m3u_icerik = "#EXTM3U\n"
-            for kid in kanal_idleri:
-                ad = kid.replace("-", " ").upper()
-                link = f"https://www.seir-sanduk.com/?player=11&id={kid}&pass={sifre}"
-                m3u_icerik += f"#EXTINF:-1,{ad}\n{link}\n"
-
-            # 3. Kaydet
-            with open("liste.m3u", "w", encoding="utf-8") as f:
-                f.write(m3u_icerik)
-            print("Liste.m3u başarıyla güncellendi!")
-        else:
-            print("Şifre sayfada bulunamadı.")
-
-    except Exception as e:
-        print(f"Hata: {e}")
+    with open("liste.m3u", "w", encoding="utf-8") as f:
+        f.write(m3u_icerik)
+    
+    print("M3U Listesi Workers desteğiyle oluşturuldu!")
 
 if __name__ == "__main__":
-    guncel_liste_olustur()
+    liste_olustur()
