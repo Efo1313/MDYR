@@ -1,6 +1,7 @@
 name: Sifre Guncelleyici
+
 on:
-  workflow_dispatch: # Sadece sen düğmeye basınca çalışır
+  workflow_dispatch: # Manuel çalıştırma butonu için
 
 permissions:
   contents: write
@@ -17,13 +18,16 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Kutupahaneyi Kur
+        run: pip install cloudscraper
+
       - name: Kodu Calistir
         run: python main.py
 
-      - name: Dosyalari Zorla Yukle
+      - name: Degisiklikleri Kaydet
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add -A
-          git commit -m "Manuel Guncelleme: $(date)" || echo "Degisiklik yok"
-          git push origin main
+          git add liste.m3u sifre.txt || echo "Dosya yok"
+          git commit -m "Liste Guncellendi" || echo "Degisiklik yok"
+          git push
