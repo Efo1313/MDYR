@@ -1,9 +1,9 @@
 name: Sifre Guncelleyici
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Telefondan butona basıp çalıştırmak için
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 * * * *' # Her saat başı otomatik çalışma
 
 permissions:
   contents: write
@@ -27,7 +27,11 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          # İsmi ne olursa olsun m3u dosyasını bul ve ekle
-          git add *.m3u
-          git commit -m "Otomatik Liste Guncellendi" || echo "Degisiklik yok"
+          
+          # Tüm m3u ve txt dosyalarını Git'e tanıtıyoruz
+          git add liste.m3u kanallar.txt
+          
+          # Değişiklik varsa commit yap, yoksa hata vermeden geç
+          git commit -m "Otomatik Sifre Guncellendi: $(date +'%Y-%m-%d %H:%M')" || echo "Degisiklik yok"
+          
           git push
