@@ -1,9 +1,9 @@
 name: Sifre Guncelleyici
 
 on:
-  workflow_dispatch: # Telefondan butona basıp çalıştırmak için
+  workflow_dispatch: # Manuel çalıştırma butonu
   schedule:
-    - cron: '0 * * * *' # Her saat başı otomatik çalışma
+    - cron: '0 * * * *' # Her saat başı otomatik
 
 permissions:
   contents: write
@@ -20,6 +20,10 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Kütüphaneleri Yukle
+        # Cloudscraper ve gerekli araçları buraya ekledik
+        run: pip install cloudscraper
+
       - name: Kodu Calistir
         run: python main.py
 
@@ -28,10 +32,10 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          # Tüm m3u ve txt dosyalarını Git'e tanıtıyoruz
+          # Dosyaları ekle
           git add liste.m3u kanallar.txt
           
-          # Değişiklik varsa commit yap, yoksa hata vermeden geç
-          git commit -m "Otomatik Sifre Guncellendi: $(date +'%Y-%m-%d %H:%M')" || echo "Degisiklik yok"
+          # Değişiklik varsa kaydet, yoksa hata vermeden geç
+          git commit -m "Liste Guncellendi: $(date +'%d-%m-%Y %H:%M')" || echo "Degisiklik yok"
           
           git push
