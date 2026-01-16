@@ -1,51 +1,51 @@
-import requests
+import cloudscraper
 import re
-from bs4 import BeautifulSoup
+import os
 
-def guncel_sifreyi_yakala():
+def guncel_sifreyi_al():
+    # Cloudflare engellerini aşmak için scraper oluşturur
+    scraper = cloudscraper.create_scraper(
+        browser={
+            'browser': 'chrome',
+            'platform': 'windows',
+            'desktop': True
+        }
+    )
+
     url = "https://www.seir-sanduk.com/"
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-        'Referer': 'https://www.google.com/'
-    }
+    
+    print("Siteye bağlanılıyor (Bot koruması aşılıyor)...")
 
     try:
-        response = requests.get(url, headers=headers, timeout=20)
-        response.raise_for_status()
+        # Site içeriğini çek
+        response = scraper.get(url, timeout=30)
+        content = response.text
         
-        # 1. Yöntem: Sayfa içindeki tüm href linklerini tara
-        # Senin paylaştığın şifre gibi uzun (30+ karakter) olanları bul
-        pass_matches = re.findall(r'pass=([a-zA-Z0-9]{30,})', response.text)
+        # Senin paylaştığın uzun şifre formatını (30+ karakter) ara
+        # Örn: 11kalAdKaAde11sF8F01011616011601
+        match = re.search(r'pass=([a-zA-Z0-9]{30,})', content)
         
-        if not pass_matches:
-            # 2. Yöntem: Script bloklarının içindeki tırnaklı uzun dizeleri tara
-            pass_matches = re.findall(r'["\']([a-zA-Z0-9]{30,})["\']', response.text)
-
-        if pass_matches:
-            # En son/en güncel görünen şifreyi al
-            yeni_sifre = pass_matches[0]
-            print(f"BAŞARILI! Güncel Şifre Bulundu: {yeni_sifre}")
-
-            # Dosyaya kaydet
+        if match:
+            yeni_sifre = match.group(1)
+            print(f"BAŞARILI! Bulunan Şifre: {yeni_sifre}")
+            
+            # Şifreyi dosyaya kaydet
             with open("sifre.txt", "w") as f:
                 f.write(yeni_sifre)
             
-            # Senin paylaştığın formata uygun M3U kanal linki oluştur
-            # Örnek: bTV HD kanalı için
-            m3u_icerik = f"#EXTM3U\n"
-            m3u_icerik += f"#EXTINF:-1,bTV HD\nhttps://www.seir-sanduk.com/?player=11&id=hd-btv-hd&pass={yeni_sifre}\n"
-            
+            # Kanal listesini (M3U) oluştur
+            m3u_icerik = f"#EXTM3U\n#EXTINF:-1,Seir Sanduk TV\nhttps://www.seir-sanduk.com/live.php?id=hd-btv-hd&pass={yeni_sifre}"
             with open("liste.m3u", "w", encoding="utf-8") as f:
                 f.write(m3u_icerik)
                 
-            print("sifre.txt ve liste.m3u başarıyla güncellendi.")
+            print("Dosyalar güncellendi.")
         else:
-            print("HATA: Sayfada senin verdiğin formata uygun uzun bir şifre bulunamadı.")
-            # Hata tespiti için sayfanın bir kısmını yazdıralım
-            print("Sayfa başlığı:", response.text[:200])
+            print("HATA: Şifre bulunamadı. Site yapısı değişmiş veya koruma aşılamadı.")
+            # Hata analizi için sayfa başlığını yazdır
+            print("Sayfa içeriği özeti:", content[:300])
 
     except Exception as e:
-        print(f"Bağlantı hatası: {e}")
+        print(f"Bir hata oluştu: {e}")
 
 if __name__ == "__main__":
-    guncel_sifreyi_yakala()
+    guncel_sifreyi_al()
