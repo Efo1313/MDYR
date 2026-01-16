@@ -2,11 +2,11 @@ name: Sifre Guncelleyici
 
 on:
   schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
+    - cron: '0 * * * *' # Her saat başı çalışır
+  workflow_dispatch:      # İstediğinde elle başlatman için
 
 permissions:
-  contents: write
+  contents: write         # Dosyaları kaydedip push yapabilmesi için şart
 
 jobs:
   build:
@@ -23,8 +23,13 @@ jobs:
       - name: Kutupahaneleri Kur
         run: pip install requests beautifulsoup4
 
-      - name: Dosyalari Kontrol Et
-        run: ls -R  # Bu komut hata olursa dosyaları listeler, sorunu anlarız
-
       - name: Kodu Calistir
-        run: python main.py  # M harfini büyük yaptık
+        run: python Main.py
+
+      - name: Degisiklikleri Kaydet ve Pushla
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add sifre.txt link.txt || echo "Dosyalar bulunamadı"
+          git commit -m "Sifre Guncellendi: $(date)" || echo "Degisiklik yok"
+          git push
