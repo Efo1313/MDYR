@@ -2,34 +2,36 @@ name: Sifre Guncelleyici
 
 on:
   schedule:
-    - cron: '0 * * * *' # Her saat başı çalışır
-  workflow_dispatch:      # İstediğinde elle başlatman için
+    - cron: '0 * * * *' # Her saat başı otomatik çalışır
+  workflow_dispatch:      # İstediğinde manuel başlatman için
 
 permissions:
-  contents: write         # Dosyaları kaydedip push yapabilmesi için şart
+  contents: write         # Dosyaları yazmak ve kaydetmek için gerekli izin
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Kodlari Cek
+      - name: Kodları Çek
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true # Kimlik bilgilerini sakla
 
       - name: Python Kur
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Kutupahaneleri Kur
+      - name: Kütüphaneleri Kur
         run: pip install requests beautifulsoup4
 
-      - name: Kodu Calistir
+      - name: Kodu Çalıştır
         run: python main.py
 
-      - name: Degisiklikleri Kaydet ve Pushla
+      - name: Değişiklikleri Kontrol Et ve Yükle
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add sifre.txt link.txt || echo "Dosyalar bulunamadı"
-          git commit -m "Sifre Guncellendi: $(date)" || echo "Degisiklik yok"
-          git push
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add sifre.txt liste.m3u || echo "Eklenecek dosya bulunamadı"
+          git commit -m "Güncel Şifre: $(date +'%d-%m-%Y %H:%M')" || echo "Değişiklik yok, commit yapılmadı"
+          git push origin main
