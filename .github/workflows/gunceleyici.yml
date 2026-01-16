@@ -27,4 +27,4 @@ jobs:
         run: ls -R  # Bu komut hata olursa dosyaları listeler, sorunu anlarız
 
       - name: Kodu Calistir
-        run: python Main.py  # M harfini büyük yaptık
+        run: python main.py  # M harfini büyük yaptık
