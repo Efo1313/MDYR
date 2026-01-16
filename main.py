@@ -1,43 +1,43 @@
 import requests
-from bs4 import BeautifulSoup
 import re
 
-def guncel_sifreyi_getir():
-    # Seir Sanduk ana sayfası
+def guncel_liste_olustur():
     url = "https://www.seir-sanduk.com/"
-    
-    # Gerçekçi bir tarayıcı başlığı
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
-
-    print("Siteye bağlanılıyor...")
 
     try:
         response = requests.get(url, headers=headers, timeout=20)
         response.raise_for_status()
         
-        # Sayfadaki şifreyi (pass=...) bul
+        # Sayfadaki güncel pass değerini yakala
         match = re.search(r'pass=([a-zA-Z0-9]+)', response.text)
         
         if match:
-            yeni_sifre = match.group(1)
-            print(f"Başarılı! Yeni şifre: {yeni_sifre}")
-            
-            # Şifreyi GitHub'ın kaydedebileceği dosyaya yaz
+            sifre = match.group(1)
+            print(f"Sifre Bulundu: {sifre}")
+
+            # 1. Şifreyi metin dosyası olarak sakla
             with open("sifre.txt", "w") as f:
-                f.write(yeni_sifre)
+                f.write(sifre)
+
+            # 2. Otomatik M3U Kanal Listesi Oluştur
+            # Buradaki kanal numaralarını ve isimlerini ihtiyacına göre çoğaltabilirsin
+            m3u_icerik = f"#EXTM3U\n"
+            m3u_icerik += f"#EXTINF:-1,Seir Sanduk TV 1\nhttps://www.seir-sanduk.com/live.php?channel=1&pass={sifre}\n"
+            m3u_icerik += f"#EXTINF:-1,Seir Sanduk TV 2\nhttps://www.seir-sanduk.com/live.php?channel=2&pass={sifre}\n"
+            m3u_icerik += f"#EXTINF:-1,Seir Sanduk TV 3\nhttps://www.seir-sanduk.com/live.php?channel=3&pass={sifre}\n"
             
-            # Tam linki de yedek olarak yaz
-            with open("link.txt", "w") as f:
-                f.write(f"https://www.seir-sanduk.com/?pass={yeni_sifre}")
+            with open("liste.m3u", "w", encoding="utf-8") as f:
+                f.write(m3u_icerik)
                 
-            print("Dosyalar başarıyla oluşturuldu.")
+            print("liste.m3u ve sifre.txt dosyaları güncellendi.")
         else:
-            print("HATA: Sayfada 'pass=' anahtarı bulunamadı!")
+            print("Hata: Sayfada sifre bulunamadı.")
 
     except Exception as e:
-        print(f"Bir hata oluştu: {e}")
+        print(f"Hata olustu: {e}")
 
 if __name__ == "__main__":
-    guncel_sifreyi_getir()
+    guncel_liste_olustur()
