@@ -1,7 +1,7 @@
 name: Sifre Guncelleyici
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
   schedule:
     - cron: '0 * * * *'
 
@@ -20,9 +20,6 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Kütüphaneleri Yukle
-        run: pip install cloudscraper
-
       - name: Kodu Calistir
         run: python main.py
 
@@ -30,8 +27,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          # Klasördeki tüm .m3u dosyalarını ekle (Hata almamak için en garantisi budur)
-          git add *.m3u 
-          # Eğer değişiklik varsa commit yap, yoksa hata verme
-          git commit -m "Otomatik Liste Guncellendi" || echo "Degisiklik yok, commit atlanıyor."
+          # İsmi ne olursa olsun m3u dosyasını bul ve ekle
+          git add *.m3u
+          git commit -m "Otomatik Liste Guncellendi" || echo "Degisiklik yok"
           git push
