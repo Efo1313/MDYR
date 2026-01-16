@@ -1,58 +1,46 @@
-import urllib.request
+import cloudscraper
 import os
+import re
 
 def guncel_sifre_al():
-    """Seir-Sanduk sitesinden güncel pass anahtarını çeker."""
     try:
+        # Web sitesinin korumasını geçmek için scraper kullanıyoruz
+        scraper = cloudscraper.create_scraper()
         url = "https://www.seir-sanduk.com/linkzagledane.php?parola=FaeagaDs3AdKaAf9"
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req) as response:
-            sifre = response.read().decode('utf-8').strip()
-            print(f"Sifre alindi: {sifre}")
-            return sifre
+        response = scraper.get(url).text
+        
+        # HTML kodlarının arasından SADECE şifreyi (harf ve rakamları) çekiyoruz
+        # Şifre genellikle kısa bir metindir, HTML taglarını temizliyoruz
+        sifre = re.sub('<[^<]+?>', '', response).strip()
+        
+        # Eğer hala çok uzunsa (HTML gelmişse), ilk kelimeyi almayı dene
+        if len(sifre) > 50: 
+            sifre = sifre.split()[0]
+            
+        print(f"Temizlenmis Sifre: {sifre}")
+        return sifre
     except Exception as e:
-        print(f"Sifre alma hatasi: {e}")
+        print(f"Hata oluştu: {e}")
         return None
 
 def liste_olustur():
     sifre = guncel_sifre_al()
-    if not sifre:
-        return
+    if not sifre: return
 
     m3u_icerik = "#EXTM3U\n"
-    dosya_bulundu = False
-
-    # kanallar.txt dosyasini okuyoruz
     try:
-        # GitHub Actions ortaminda dosya yolunu garantiye aliyoruz
-        base_path = os.path.dirname(__file__)
-        txt_path = os.path.join(base_path, "kanallar.txt")
-        
-        with open(txt_path, "r", encoding="utf-8") as f:
+        with open("kanallar.txt", "r", encoding="utf-8") as f:
             for satir in f:
-                satir = satir.strip()
-                if satir and ":" in satir:
-                    # 'Kanal Adi: kanal-id' formatini ayiriyoruz
+                if ":" in satir:
                     ad, id_kod = satir.split(":", 1)
-                    ad = ad.strip()
-                    id_kod = id_kod.strip()
-                    
-                    # Workers linkini olusturuyoruz
-                    link = f"http://tv.seirsanduk.workers.dev/?ID=https://www.seir-sanduk.com/{id_kod}?pass={sifre}"
-                    m3u_icerik += f"#EXTINF:-1,{ad}\n{link}\n"
-                    dosya_bulundu = True
-    except FileNotFoundError:
-        print("HATA: kanallar.txt dosyasi bulunamadi! Lutfen bu dosyayi olusturun.")
-        return
-
-    if dosya_bulundu:
-        # Nihai M3U dosyasini kaydediyoruz
+                    link = f"http://tv.seirsanduk.workers.dev/?ID=https://www.seir-sanduk.com/{id_kod.strip()}?pass={sifre}"
+                    m3u_icerik += f"#EXTINF:-1,{ad.strip()}\n{link}\n"
+        
         with open("liste.m3u", "w", encoding="utf-8") as f:
             f.write(m3u_icerik)
-        print("liste.m3u basariyla guncellendi.")
-    else:
-        print("HATA: kanallar.txt ici bos veya hatali formatta.")
+        print("Liste tertemiz bir sekilde olusturuldu!")
+    except Exception as e:
+        print(f"Liste yazma hatasi: {e}")
 
 if __name__ == "__main__":
     liste_olustur()
