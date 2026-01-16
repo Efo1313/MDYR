@@ -1,9 +1,9 @@
-name: Sifre Guncelleyici
+Name: Sifre Guncelleyici
 
 on:
-  workflow_dispatch: # Manuel çalıştırmak için (Telefondan butona basınca)
+  workflow_dispatch:
   schedule:
-    - cron: '0 * * * *' # Her saat başı otomatik çalışır
+    - cron: '0 * * * *'
 
 permissions:
   contents: write
@@ -30,6 +30,8 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add liste.m3u
+          # BURASI KRİTİK: Python kodunda open("...") içine ne yazdıysan o ismi kullanmalısın.
+          # Eğer Python kodunda 'bulgar_iptv.m3u' yazıyorsa burayı da öyle yap:
+          git add bulgar_iptv.m3u || git add liste.m3u 
           git commit -m "Otomatik Liste Guncellendi" || echo "Degisiklik yok"
           git push
