@@ -1,44 +1,33 @@
-import cloudscraper
-import re
+import os
 
-def tum_kanallari_olustur():
-    # Şifreni buraya yaz
-    sifre = "BURAYA_SIFREYI_YAZ"
-    
-    url = "https://www.seir-sanduk.com/"
-    scraper = cloudscraper.create_scraper()
-    
-    try:
-        print("Kanal listesi çekiliyor...")
-        response = scraper.get(url, timeout=30)
-        content = response.text
-        
-        # Sayfadaki tüm kanal linklerini bulur
-        # Format genelde şöyledir: id=kanal-adi
-        kanal_bulucu = re.findall(r'id=([a-zA-Z0-9_-]+)', content)
-        
-        # Tekrar eden kanalları temizle
-        essiz_kanallar = sorted(list(set(kanal_bulucu)))
-        
-        m3u_icerik = "#EXTM3U\n"
-        
-        for kanal_id in essiz_kanallar:
-            # Gereksiz veya reklam içerikli id'leri eleyelim
-            if len(kanal_id) < 3 or kanal_id in ['player', 'pass', 'submit']:
-                continue
-                
-            kanal_adi = kanal_id.replace('-', ' ').title() # id'yi güzel bir isme dönüştürür
-            link = f"https://www.seir-sanduk.com/?player=11&id={kanal_id}&pass={sifre}"
-            
-            m3u_icerik += f"#EXTINF:-1,{kanal_adi}\n{link}\n"
-        
-        with open("liste.m3u", "w", encoding="utf-8") as f:
-            f.write(m3u_icerik)
-            
-        print(f"Bitti! Toplam {len(essiz_kanallar)} kanal listeye eklendi.")
+def liste_hazirla():
+    # FORUMDAN ALDIĞIN ŞİFREYİ AŞAĞIYA YAPIŞTIR
+    sifre = "11kalAdKaAde11sF8F01011616011601" 
 
-    except Exception as e:
-        print(f"Hata oluştu: {e}")
+    # Seir-Sanduk üzerindeki popüler kanal ID'leri
+    kanal_idleri = [
+        "hd-btv-hd", "nova-tv-hd", "diema-sport-hd", "diema-sport-2-hd",
+        "diema-sport-3-hd", "max-sport-1-hd", "max-sport-2-hd", "max-sport-3-hd",
+        "max-sport-4-hd", "hbo-hd-bg", "hbo-2-hd-bg", "hbo-3-hd-bg",
+        "bnt-1-hd", "bnt-2-hd", "bnt-3-hd", "btv-action-hd", "btv-cinema-hd",
+        "btv-comedy-hd", "btv-story-hd", "ring-hd", "diema-family-hd", "kinonova-hd"
+    ]
+
+    m3u_icerik = "#EXTM3U\n"
+    
+    for kid in kanal_idleri:
+        adi = kid.replace("-", " ").upper()
+        link = f"https://www.seir-sanduk.com/?player=11&id={kid}&pass={sifre}"
+        m3u_icerik += f"#EXTINF:-1,{adi}\n{link}\n"
+
+    # Dosyaları oluştur
+    with open("liste.m3u", "w", encoding="utf-8") as f:
+        f.write(m3u_icerik)
+    
+    with open("sifre.txt", "w") as f:
+        f.write(sifre)
+
+    print("Dosyalar başarıyla oluşturuldu!")
 
 if __name__ == "__main__":
-    tum_kanallari_olustur()
+    liste_hazirla()
