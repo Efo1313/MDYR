@@ -2,11 +2,11 @@ name: Sifre Guncelleyici
 
 on:
   schedule:
-    - cron: '0 * * * *' # Her saat başı otomatik çalışır
-  workflow_dispatch:      # İstediğinde elle (manuel) başlatman için
+    - cron: '0 * * * *' # Her saat başı çalışır
+  workflow_dispatch:      # İstediğinde elle başlatman için
 
 permissions:
-  contents: write         # GitHub'ın dosyayı güncelleyip kaydedebilmesi için şart
+  contents: write         # GitHub'ın dosyayı kaydedebilmesi için gerekli izin
 
 jobs:
   build:
@@ -24,12 +24,12 @@ jobs:
         run: pip install requests beautifulsoup4
 
       - name: Kodu Calistir
-        run: python main.py  # Burada küçük harf kullandık
+        run: python main.py  # Burayı küçük harf 'main.py' yaptık
 
-      - name: Değisiklikleri Kaydet
+      - name: Degisiklikleri Kaydet
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add sifre.txt link.txt || exit 0
-          git commit -m "Şifre güncellendi: $(date)" || exit 0
+          git commit -m "Sifre guncellendi: $(date)" || exit 0
           git push
