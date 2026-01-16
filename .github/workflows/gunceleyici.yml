@@ -24,7 +24,7 @@ jobs:
         run: pip install requests beautifulsoup4
 
       - name: Kodu Calistir
-        run: python Main.py
+        run: python main.py
 
       - name: Degisiklikleri Kaydet ve Pushla
         run: |
