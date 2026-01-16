@@ -1,51 +1,50 @@
 import cloudscraper
 import re
-import os
+import time
 
-def guncel_sifreyi_al():
-    # Cloudflare engellerini aşmak için scraper oluşturur
+def guncel_sifreyi_yakala():
+    # Sitenin bot korumasını aşmak için en gelişmiş tarayıcı kimliği
     scraper = cloudscraper.create_scraper(
+        delay=10, 
         browser={
             'browser': 'chrome',
             'platform': 'windows',
-            'desktop': True
+            'mobile': False,
         }
     )
 
     url = "https://www.seir-sanduk.com/"
     
-    print("Siteye bağlanılıyor (Bot koruması aşılıyor)...")
-
     try:
-        # Site içeriğini çek
-        response = scraper.get(url, timeout=30)
-        content = response.text
+        # Siteye bağlan ve JS korumasının çözülmesi için bekle
+        print("Güvenlik duvarı aşılıyor, lütfen bekleyin...")
+        response = scraper.get(url, timeout=45)
         
-        # Senin paylaştığın uzun şifre formatını (30+ karakter) ara
-        # Örn: 11kalAdKaAde11sF8F01011616011601
-        match = re.search(r'pass=([a-zA-Z0-9]{30,})', content)
+        # Eğer hala koruma sayfasındaysak içeriği kontrol et
+        if "areMouseMovesMostlyStraightLined" in response.text:
+            print("HATA: Site hala fare hareketi kontrolü yapıyor.")
+            # Alternatif: Mobil tarayıcıyı dene
+            scraper = cloudscraper.create_scraper(browser={'browser': 'iphone', 'platform': 'ios'})
+            response = scraper.get(url, timeout=45)
+
+        content = response.text
+        # Şifre kalıbını ara (Örn: 11kalAd... formatı)
+        # Bu sefer daha geniş bir arama yapıyoruz
+        match = re.search(r'pass=([a-zA-Z0-9]{25,50})', content)
         
         if match:
-            yeni_sifre = match.group(1)
-            print(f"BAŞARILI! Bulunan Şifre: {yeni_sifre}")
+            sifre = match.group(1)
+            print(f"BAŞARILI! Şifre: {sifre}")
+            with open("sifre.txt", "w") as f: f.write(sifre)
             
-            # Şifreyi dosyaya kaydet
-            with open("sifre.txt", "w") as f:
-                f.write(yeni_sifre)
-            
-            # Kanal listesini (M3U) oluştur
-            m3u_icerik = f"#EXTM3U\n#EXTINF:-1,Seir Sanduk TV\nhttps://www.seir-sanduk.com/live.php?id=hd-btv-hd&pass={yeni_sifre}"
-            with open("liste.m3u", "w", encoding="utf-8") as f:
-                f.write(m3u_icerik)
-                
-            print("Dosyalar güncellendi.")
+            # Senin istediğin link formatıyla M3U oluştur
+            m3u = f"#EXTM3U\n#EXTINF:-1,bTV HD\nhttps://www.seir-sanduk.com/?player=11&id=hd-btv-hd&pass={sifre}"
+            with open("liste.m3u", "w", encoding="utf-8") as f: f.write(m3u)
         else:
-            print("HATA: Şifre bulunamadı. Site yapısı değişmiş veya koruma aşılamadı.")
-            # Hata analizi için sayfa başlığını yazdır
-            print("Sayfa içeriği özeti:", content[:300])
+            print("Şifre bulunamadı. Site botu tamamen engelledi.")
 
     except Exception as e:
-        print(f"Bir hata oluştu: {e}")
+        print(f"Hata: {e}")
 
 if __name__ == "__main__":
-    guncel_sifreyi_al()
+    guncel_sifreyi_yakala()
