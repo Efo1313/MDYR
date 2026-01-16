@@ -1,25 +1,27 @@
 import os
 
 def liste_olustur():
-    # Eğer site botu engellerse, şifreyi manuel olarak buradan veya 
-    # GitHub Secrets kısmından alabiliriz. 
-    # Şimdilik senin paylaştığın son çalışan şifreyi varsayılan yapalım.
+    # Forumdan aldığın şifreyi aşağıdaki tırnakların içine yapıştır
+    guncel_sifre = "BURAYA_SIFREYI_YAZ"
     
-    varsayilan_sifre = "11kalAdKaAde11sF8F01011616011601"
+    # Kanal Listesi
+    kanallar = [
+        {"ad": "bTV HD", "id": "hd-btv-hd"},
+        {"ad": "Nova TV", "id": "nova-tv"},
+        {"ad": "Diema Sport", "id": "diema-sport-hd"}
+    ]
     
-    # Dosyaları her halükarda oluştur ki hata vermesin
-    try:
-        with open("sifre.txt", "w") as f:
-            f.write(varsayilan_sifre)
-            
-        m3u_icerik = f"#EXTM3U\n#EXTINF:-1,Seir Sanduk TV\nhttps://www.seir-sanduk.com/?player=11&id=hd-btv-hd&pass={varsayilan_sifre}"
-        
-        with open("liste.m3u", "w", encoding="utf-8") as f:
-            f.write(m3u_icerik)
-            
-        print("Dosyalar başarıyla oluşturuldu ve yüklenebilir hale getirildi.")
-    except Exception as e:
-        print(f"Hata oluştu: {e}")
+    m3u_icerik = "#EXTM3U\n"
+    
+    for kanal in kanallar:
+        link = f"https://www.seir-sanduk.com/?player=11&id={kanal['id']}&pass={guncel_sifre}"
+        m3u_icerik += f"#EXTINF:-1,{kanal['ad']}\n{link}\n"
+    
+    # Dosyayı kaydet
+    with open("liste.m3u", "w", encoding="utf-8") as f:
+        f.write(m3u_icerik)
+    
+    print("Liste başarıyla güncellendi!")
 
 if __name__ == "__main__":
     liste_olustur()
