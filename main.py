@@ -30,20 +30,22 @@ def guncelle():
             print(f"Güncelleniyor: {kanal_adi}")
             
             try:
-                response = scraper.get(kanal_sayfa_url, timeout=10)
-                # Sadece rakamları değil, uzun harf/rakam karışık pasaportu bulmak için regex'i genişlettik
-                # Genelde pass= kısmından sonra gelen tırnak içindeki veya & işaretine kadar olan uzun metni alır
-                token_match = re.search(r'pass=([a-zA-Z0-9]{20,})', response.text)
+                response = scraper.get(kanal_sayfa_url, timeout=15)
                 
-                # Eğer çok uzun olanı bulamazsa standart olanı dene
-                if not token_match:
-                    token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.text)
+                # STRATEJİ: Sayfa içindeki en uzun 'pass' benzeri kod dizisini bul
+                # Sadece pass= değil, tırnak içindeki 30-40 karakterli karmaşık kodları arıyoruz
+                tokens = re.findall(r'pass=([a-zA-Z0-9]{20,})', response.text)
+                
+                if not tokens:
+                    # Alternatif: Sayfa içinde tek başına duran uzun karmaşık dizileri ara
+                    tokens = re.findall(r'["\']([a-zA-Z0-9]{30,})["\']', response.text)
 
-                if token_match:
-                    token = token_match.group(1)
+                if tokens:
+                    # Bulunanlar içinden en uzun olanı seç (Pasaport genellikle en uzunudur)
+                    token = max(tokens, key=len)
                     kanal_id = slug.replace("-online", "")
                     
-                    # PLAYER 11 ve KARAKTERLİ (Encoded) YAPI
+                    # PLAYER 11 ve TAM ENCODED YAPI
                     ham_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
                     guvenli_link = urllib.parse.quote(ham_link, safe='')
                     final_url = f"{WORKER_URL}{guvenli_link}"
@@ -54,9 +56,9 @@ def guncelle():
                     with open(dosya_yolu, "w", encoding="utf-8") as f_kanal:
                         f_kanal.write(final_url)
                     
-                    print(f"-> {kanal_adi} için tam pasaport eklendi.")
+                    print(f"-> {kanal_adi} pasaportu yakalandı.")
                 else:
-                    print(f"-> {kanal_adi} için pasaport bulunamadı.")
+                    print(f"-> {kanal_adi} için uygun pasaport bulunamadı.")
                 
                 time.sleep(1)
                         
