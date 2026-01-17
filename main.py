@@ -5,7 +5,6 @@ import urllib.parse
 import time
 
 def dosya_adi_temizle(metin):
-    # Dosya adında sorun çıkaracak karakterleri temizler
     return re.sub(r'[\\/*?:"<>|]', "", metin).strip().replace(" ", "_")
 
 def guncelle():
@@ -32,7 +31,6 @@ def guncelle():
             kanal_adi, slug = satir.split(": ")
             kanal_sayfa_url = f"{BASE_URL}{slug}"
             
-            # Her kanal için temiz bir dosya adı oluştur (Örn: BNT_1_HD.m3u)
             temiz_ad = dosya_adi_temizle(kanal_adi)
             dosya_yolu = os.path.join(KLASOR_ADI, f"{temiz_ad}.m3u")
             
@@ -46,18 +44,16 @@ def guncelle():
                     token = token_match.group(1)
                     kanal_id = slug.replace("-online", "")
                     
-                    # Linki oluştur ve encode et
-                    ham_link = f"{BASE_URL}?player=13&id={kanal_id}&pass={token}"
+                    # PLAYER 11 SEÇİLDİ ve Karakter Kodlaması Yapıldı
+                    ham_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
                     guvenli_link = urllib.parse.quote(ham_link, safe='')
                     final_url = f"{WORKER_URL}{guvenli_link}"
                     
-                    # HER KANAL İÇİN AYRI DOSYA YAZ
+                    # DOSYA İÇİNE SADECE ADRES YAZILIYOR
                     with open(dosya_yolu, "w", encoding="utf-8") as f_kanal:
-                        f_kanal.write("#EXTM3U\n")
-                        f_kanal.write(f"#EXTINF:-1,{kanal_adi}\n")
-                        f_kanal.write(f"{final_url}\n")
+                        f_kanal.write(final_url)
                     
-                    print(f"-> {temiz_ad}.m3u oluşturuldu.")
+                    print(f"-> {temiz_ad}.m3u (Sadece Link) oluşturuldu.")
                 else:
                     print(f"-> {kanal_adi} için şifre bulunamadı.")
                 
@@ -66,7 +62,7 @@ def guncelle():
             except Exception as e:
                 print(f"-> {kanal_adi} hatası: {e}")
 
-        print(f"\nİşlem tamam! Tüm kanallar '{KLASOR_ADI}' klasörüne ayrı ayrı kaydedildi.")
+        print(f"\nİşlem tamam! Dosyalar sadece saf adres içeriyor.")
 
     except Exception as e:
         print(f"Genel Hata: {e}")
