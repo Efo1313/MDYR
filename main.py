@@ -55,11 +55,11 @@ def guncelle():
                 final_link = f"{WORKER_URL}{karakterli_ic_link}"
                 
                 # Dosya adını hazırla ve kaydet (Boşlukları alt tire yapar)
-                dosya_adi = kanal_adi.replace(" ", "_") + ".m3u"
+                dosya_adi = kanal_adi.replace(" ", "_") + ".m3u8"
                 dosya_yolu = os.path.join(KLASOR_ADI, dosya_adi)
                 
-                with open(dosya_yolu, "w", encoding="utf-8") as f_m3u:
-                    f_m3u.write(final_link)
+                with open(dosya_yolu, "w", encoding="utf-8") as f_m3u8:
+                    f_m3u8.write(final_link)
                 
                 print(f"-> {dosya_adi} oluşturuldu.")
         
