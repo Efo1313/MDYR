@@ -1,7 +1,6 @@
 import cloudscraper
 import re
 import os
-import urllib.parse
 
 def guncelle():
     # 1. YAPILANDIRMA
@@ -26,9 +25,9 @@ def guncelle():
             return
             
         token = token_match.group(1)
-        print(f"Başarılı! Pasaport: {token[:10]}...")
+        print(f"Başarılı! Pasaport alındı.")
 
-        # 3. KANALLARI İŞLE VE AYRI DOSYALAR OLUŞTUR
+        # 3. KANALLARI İŞLE
         if not os.path.exists("kanallar.txt"):
             print("Hata: kanallar.txt bulunamadı!")
             return
@@ -41,21 +40,23 @@ def guncelle():
                 kanal_adi, slug = satir.strip().split(": ")
                 kanal_id = slug.replace("-online", "")
                 
-                # Link Oluşturma
-                ic_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
-                karakterli_ic_link = urllib.parse.quote(ic_link, safe='')
-                final_link = f"{WORKER_URL}{karakterli_ic_link}"
+                # TEMİZ LİNK OLUŞTURMA (Yüzdelik karakterler kaldırıldı)
+                # Direkt olarak değişkenleri birleştiriyoruz
+                final_link = f"{WORKER_URL}{BASE_URL}?player=11&id={kanal_id}&pass={token}"
                 
                 # Dosya adını düzenle
                 dosya_adi = kanal_adi.replace(" ", "_") + ".m3u"
                 dosya_yolu = os.path.join(KLASOR_ADI, dosya_adi)
                 
-                # Dosya içeriğini yaz (İstediğin formatta)
+                # Dosya içeriğini yaz
                 with open(dosya_yolu, "w", encoding="utf-8") as f_m3u8:
-                    f_m3u8.write("#EXTM3U\n") # Başlık
-                    f_m3u8.write(f"{final_link}\n") # Link
+                    f_m3u8.write("#EXTM3U\n")
+                    # Player'ın linki tanıması için kanal bilgisini ekliyoruz
+                    f_m3u8.write(f"#EXTINF:-1,{kanal_adi}\n")
+                    # Linkin sonundaki olası boşlukları temizleyerek yazıyoruz
+                    f_m3u8.write(final_link.strip())
                 
-                print(f"-> {dosya_adi} oluşturuldu.")
+                print(f"-> {dosya_adi} oluşturuldu (Temiz Link).")
         
         print(f"\nTüm dosyalar '{KLASOR_ADI}' klasöründe hazır!")
 
