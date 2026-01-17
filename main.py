@@ -9,58 +9,71 @@ def guncelle():
     WORKER_URL = "https://tv.seirsanduk.workers.dev/?ID="
     BASE_URL = "https://www.seir-sanduk.com/"
     KLASOR_ADI = "playlist"
+    ANA_LISTE_ADI = "TUM_KANALLAR.m3u"
     
+    # GITHUB LOGO AYARI
+    USER_NAME = "Efo1313" 
+    REPO_NAME = "MDYR"
+    LOGO_BASE_URL = f"https://raw.githubusercontent.com/{USER_NAME}/{REPO_NAME}/main/logos/"
+
     if not os.path.exists(KLASOR_ADI):
         os.makedirs(KLASOR_ADI)
 
     scraper = cloudscraper.create_scraper()
     
     try:
-        # 2. GÜNCEL PASAPORTU (TOKEN) ÇEK
-        print("Siteye giriş yapılıyor, güncel pasaport alınıyor...")
+        print("Siteden güncel token alınıyor...")
         response = scraper.get(GIRIS_URL, timeout=20)
         token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url)
         
         if not token_match:
-            print("Hata: Pasaport kodu bulunamadı!")
+            print("Hata: Token bulunamadı!")
             return
             
         token = token_match.group(1)
-        print(f"Başarılı! Pasaport: {token[:10]}...")
+        print(f"Başarılı! Token: {token}")
 
-        # 3. KANALLARI İŞLE VE AYRI DOSYALAR OLUŞTUR
         if not os.path.exists("kanallar.txt"):
-            print("Hata: kanallar.txt bulunamadı!")
+            print("Hata: kanallar.txt dosyası yok!")
             return
 
         with open("kanallar.txt", "r", encoding="utf-8") as f:
             kanallar = f.readlines()
 
-        for satir in kanallar:
-            if ":" in satir:
-                kanal_adi, slug = satir.strip().split(": ")
-                kanal_id = slug.replace("-online", "")
-                
-                # Link Oluşturma
-                ic_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
-                karakterli_ic_link = urllib.parse.quote(ic_link, safe='')
-                final_link = f"{WORKER_URL}{karakterli_ic_link}"
-                
-                # Dosya adını düzenle
-                dosya_adi = kanal_adi.replace(" ", "_") + ".m3u"
-                dosya_yolu = os.path.join(KLASOR_ADI, dosya_adi)
-                
-                # Dosya içeriğini yaz (İstediğin formatta)
-                with open(dosya_yolu, "w", encoding="utf-8") as f_m3u8:
-                    f_m3u8.write("#EXTM3U\n") # Başlık
-                    f_m3u8.write(f"{final_link}\n") # Link
-                
-                print(f"-> {dosya_adi} oluşturuldu.")
+        ana_liste_yolu = os.path.join(KLASOR_ADI, ANA_LISTE_ADI)
         
-        print(f"\nTüm dosyalar '{KLASOR_ADI}' klasöründe hazır!")
+        with open(ana_liste_yolu, "w", encoding="utf-8") as f_main:
+            f_main.write("#EXTM3U\n")
+            
+            for satir in kanallar:
+                if ":" in satir:
+                    kanal_adi, slug = satir.strip().split(": ")
+                    kanal_id = slug.replace("-online", "")
+                    
+                    # 1. İÇ LİNKİ OLUŞTUR (Örneğindeki gibi ?player=11... yapısı)
+                    ic_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
+                    
+                    # 2. KARAKTERLİ HALE GETİR (URL ENCODING)
+                    # safe='' kullanarak : / ? = karakterlerinin hepsini % koduna çeviriyoruz
+                    karakterli_ic_link = urllib.parse.quote(ic_link, safe='')
+                    
+                    # 3. FİNAL LİNK (Senin örneğinle birebir aynı yapı)
+                    final_link = f"{WORKER_URL}{karakterli_ic_link}"
+                    
+                    # LOGO YAPILANDIRMASI
+                    logo_dosya_adi = kanal_adi.replace(" ", "_").lower() + ".png"
+                    logo_url = f"{LOGO_BASE_URL}{logo_dosya_adi}"
+                    
+                    # M3U DOSYASINA YAZ
+                    f_main.write(f'#EXTINF:-1 tvg-logo="{logo_url}",{kanal_adi}\n')
+                    f_main.write(f"{final_link}\n")
+                    
+                    print(f"-> {kanal_adi} eklendi.")
+        
+        print(f"\nİşlem Başarılı! Liste oluşturuldu: {ana_liste_yolu}")
 
     except Exception as e:
-        print(f"Beklenmedik bir hata: {e}")
+        print(f"Hata oluştu: {e}")
 
-if name == "main":
+if __name__ == "__main__":
     guncelle()
