@@ -4,20 +4,21 @@ import os
 import urllib.parse
 import time
 
+def dosya_adi_temizle(metin):
+    # Dosya adında sorun çıkaracak karakterleri temizler
+    return re.sub(r'[\\/*?:"<>|]', "", metin).strip().replace(" ", "_")
+
 def guncelle():
-    # YAPILANDIRMA
-    KLASOR_ADI = "playlist"  # Dosyanın kaydedileceği klasör
-    DOSYA_ADI = "liste.m3u"
+    KLASOR_ADI = "playlist"
     WORKER_URL = "http://tv.seirsanduk.workers.dev/?ID="
     BASE_URL = "https://www.seir-sanduk.com/"
     
-    # Klasör yoksa oluştur
     if not os.path.exists(KLASOR_ADI):
         os.makedirs(KLASOR_ADI)
-        print(f"'{KLASOR_ADI}' klasörü oluşturuldu.")
 
-    KAYIT_YOLU = os.path.join(KLASOR_ADI, DOSYA_ADI)
-    scraper = cloudscraper.create_scraper()
+    scraper = cloudscraper.create_scraper(
+        browser={'browser': 'chrome', 'platform': 'windows', 'mobile': False}
+    )
     
     try:
         if not os.path.exists("kanallar.txt"):
@@ -25,43 +26,47 @@ def guncelle():
             return
 
         with open("kanallar.txt", "r", encoding="utf-8") as f:
-            kanallar = f.readlines()
+            kanallar = [s.strip() for s in f.readlines() if ":" in s]
 
-        # Dosyayı belirlenen klasörün içine açıyoruz
-        with open(KAYIT_YOLU, "w", encoding="utf-8") as m3u:
-            m3u.write("#EXTM3U\n")
+        for satir in kanallar:
+            kanal_adi, slug = satir.split(": ")
+            kanal_sayfa_url = f"{BASE_URL}{slug}"
             
-            for satir in kanallar:
-                if ":" in satir:
-                    kanal_adi, slug = satir.strip().split(": ")
-                    kanal_sayfa_url = f"{BASE_URL}{slug}"
+            # Her kanal için temiz bir dosya adı oluştur (Örn: BNT_1_HD.m3u)
+            temiz_ad = dosya_adi_temizle(kanal_adi)
+            dosya_yolu = os.path.join(KLASOR_ADI, f"{temiz_ad}.m3u")
+            
+            print(f"Güncelleniyor: {kanal_adi}")
+            
+            try:
+                kanal_res = scraper.get(kanal_sayfa_url, timeout=10)
+                token_match = re.search(r'pass=([a-zA-Z0-9]+)', kanal_res.text)
+                
+                if token_match:
+                    token = token_match.group(1)
+                    kanal_id = slug.replace("-online", "")
                     
-                    print(f"Güncelleniyor: {kanal_adi}")
+                    # Linki oluştur ve encode et
+                    ham_link = f"{BASE_URL}?player=13&id={kanal_id}&pass={token}"
+                    guvenli_link = urllib.parse.quote(ham_link, safe='')
+                    final_url = f"{WORKER_URL}{guvenli_link}"
                     
-                    try:
-                        kanal_res = scraper.get(kanal_sayfa_url, timeout=15)
-                        token_match = re.search(r'pass=([a-zA-Z0-9]+)', kanal_res.text)
+                    # HER KANAL İÇİN AYRI DOSYA YAZ
+                    with open(dosya_yolu, "w", encoding="utf-8") as f_kanal:
+                        f_kanal.write("#EXTM3U\n")
+                        f_kanal.write(f"#EXTINF:-1,{kanal_adi}\n")
+                        f_kanal.write(f"{final_url}\n")
+                    
+                    print(f"-> {temiz_ad}.m3u oluşturuldu.")
+                else:
+                    print(f"-> {kanal_adi} için şifre bulunamadı.")
+                
+                time.sleep(0.5)
                         
-                        if token_match:
-                            token = token_match.group(1)
-                            kanal_id = slug.replace("-online", "")
-                            
-                            # Player 13 ve Güvenli Karakterli Link
-                            ham_link = f"{BASE_URL}?player=13&id={kanal_id}&pass={token}"
-                            guvenli_link = urllib.parse.quote(ham_link, safe='')
-                            final_url = f"{WORKER_URL}{guvenli_link}"
-                            
-                            m3u.write(f"#EXTINF:-1,{kanal_adi}\n")
-                            m3u.write(f"{final_url}\n")
-                        else:
-                            print(f"! {kanal_adi} için şifre bulunamadı.")
-                            
-                        time.sleep(1) # Siteyi bloklamamak için
-                        
-                    except Exception as e:
-                        print(f"! {kanal_adi} hatası: {e}")
+            except Exception as e:
+                print(f"-> {kanal_adi} hatası: {e}")
 
-        print(f"\nİşlem tamam! Dosya şuraya kaydedildi: {KAYIT_YOLU}")
+        print(f"\nİşlem tamam! Tüm kanallar '{KLASOR_ADI}' klasörüne ayrı ayrı kaydedildi.")
 
     except Exception as e:
         print(f"Genel Hata: {e}")
