@@ -27,25 +27,26 @@ def guncelle():
             kanal_adi, slug = satir.split(": ")
             kanal_sayfa_url = f"{BASE_URL}{slug}"
             
-            print(f"Güncelleniyor: {kanal_adi}")
+            print(f"Tarama Başladı: {kanal_adi}")
             
             try:
                 response = scraper.get(kanal_sayfa_url, timeout=15)
-                
-                # STRATEJİ: Sayfa içindeki en uzun 'pass' benzeri kod dizisini bul
-                # Sadece pass= değil, tırnak içindeki 30-40 karakterli karmaşık kodları arıyoruz
-                tokens = re.findall(r'pass=([a-zA-Z0-9]{20,})', response.text)
-                
-                if not tokens:
-                    # Alternatif: Sayfa içinde tek başına duran uzun karmaşık dizileri ara
-                    tokens = re.findall(r'["\']([a-zA-Z0-9]{30,})["\']', response.text)
+                html_icerik = response.text
 
-                if tokens:
-                    # Bulunanlar içinden en uzun olanı seç (Pasaport genellikle en uzunudur)
-                    token = max(tokens, key=len)
+                # 1. STRATEJİ: pass= sonrasındaki en uzun diziyi ara
+                # 2. STRATEJİ: Tırnak içindeki 32-64 karakter arası karmaşık dizileri ara
+                # 3. STRATEJİ: Gizli input veya JS değişkenlerini tara
+                potansiyel_tokenlar = re.findall(r'[Pp]ass=["\']?([a-zA-Z0-9]{20,})', html_icerik)
+                genel_uzun_diziler = re.findall(r'["\']([a-zA-Z0-9]{30,64})["\']', html_icerik)
+                
+                tum_adaylar = potansiyel_tokenlar + genel_uzun_diziler
+                
+                if tum_adaylar:
+                    # En uzun ve karmaşık görüneni seçiyoruz (Gerçek pasaport budur)
+                    token = max(tum_adaylar, key=len)
                     kanal_id = slug.replace("-online", "")
                     
-                    # PLAYER 11 ve TAM ENCODED YAPI
+                    # PLAYER 11 + ENCODED
                     ham_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
                     guvenli_link = urllib.parse.quote(ham_link, safe='')
                     final_url = f"{WORKER_URL}{guvenli_link}"
@@ -56,17 +57,17 @@ def guncelle():
                     with open(dosya_yolu, "w", encoding="utf-8") as f_kanal:
                         f_kanal.write(final_url)
                     
-                    print(f"-> {kanal_adi} pasaportu yakalandı.")
+                    print(f"-> {kanal_adi} OK: {token[:10]}...")
                 else:
-                    print(f"-> {kanal_adi} için uygun pasaport bulunamadı.")
+                    print(f"-> {kanal_adi} için pasaport bulunamadı.")
                 
-                time.sleep(1)
+                time.sleep(1.5) # Engellenmemek için süreyi biraz artırdık
                         
             except Exception as e:
-                print(f"Hata: {e}")
+                print(f"Hata ({kanal_adi}): {e}")
 
     except Exception as e:
-        print(f"Genel Hata: {e}")
+        print(f"Sistem Hatası: {e}")
 
 if __name__ == "__main__":
     guncelle()
