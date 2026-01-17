@@ -1,6 +1,7 @@
 import cloudscraper
 import re
 import os
+import urllib.parse
 
 def guncelle():
     # 1. Ayarlar
@@ -9,27 +10,25 @@ def guncelle():
     BASE_URL = "https://www.seir-sanduk.com/"
     KLASOR_ADI = "playlist"
     
-    # Klasör yoksa oluştur
     if not os.path.exists(KLASOR_ADI):
         os.makedirs(KLASOR_ADI)
-        print(f"'{KLASOR_ADI}' klasörü oluşturuldu.")
 
     scraper = cloudscraper.create_scraper()
     
     try:
-        # 2. Şifreyi (Token) Al
-        print("Siteye giriş yapılıyor...")
+        # 2. Uzun Pasaportu (Token) Al
+        print("Pasaport alınıyor...")
         response = scraper.get(GIRIS_URL, timeout=20)
         token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url)
         
         if not token_match:
-            print("Hata: Şifre (pass) bulunamadı.")
+            print("Hata: Şifre bulunamadı.")
             return
             
         token = token_match.group(1)
-        print(f"Güncel Şifre: {token}")
+        print(f"Güncel Şifre Alındı: {token[:10]}...")
 
-        # 3. Kanalları Oku ve Ayrı Dosyalar Oluştur
+        # 3. Kanalları Oku ve Karakterli Linkleri Oluştur
         if not os.path.exists("kanallar.txt"):
             print("Hata: kanallar.txt bulunamadı!")
             return
@@ -40,22 +39,28 @@ def guncelle():
         for satir in kanallar:
             if ":" in satir:
                 kanal_adi, slug = satir.strip().split(": ")
+                kanal_id = slug.replace("-online", "")
                 
-                # Dosya adını temizle (Boşlukları alt tire yap)
+                # ÇALIŞAN FORMATIN HAZIRLANMASI
+                # Önce iç linki oluşturuyoruz
+                ic_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
+                
+                # Linki karakterli (encoded) hale getiriyoruz
+                karakterli_ic_link = urllib.parse.quote(ic_link, safe='')
+                
+                # Worker ile birleştiriyoruz
+                final_link = f"{WORKER_URL}{karakterli_ic_link}"
+                
+                # Dosya adını hazırla ve kaydet
                 dosya_adi = kanal_adi.replace(" ", "_") + ".m3u"
                 dosya_yolu = os.path.join(KLASOR_ADI, dosya_adi)
                 
-                # Player 11'li link yapısı
-                # Not: Eğer Player 11 çalışmazsa aşağıyı {BASE_URL}{slug}?pass={token} yapabilirsin
-                final_link = f"{WORKER_URL}{BASE_URL}?player=11&id={slug.replace('-online','')}&pass={token}"
-                
-                # Sadece linki içeren m3u dosyasını yaz
                 with open(dosya_yolu, "w", encoding="utf-8") as f_m3u:
                     f_m3u.write(final_link)
                 
                 print(f"-> {dosya_adi} oluşturuldu.")
         
-        print("\nİşlem Başarılı: Tüm kanallar 'playlist' klasörüne kaydedildi.")
+        print("\nİşlem Başarılı: Tüm dosyalar çalışan formata güncellendi.")
 
     except Exception as e:
         print(f"Hata: {e}")
