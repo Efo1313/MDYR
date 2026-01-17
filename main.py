@@ -1,73 +1,64 @@
 import cloudscraper
 import re
 import os
-import urllib.parse
-import time
 
 def guncelle():
-    KLASOR_ADI = "playlist"
-    WORKER_URL = "http://tv.seirsanduk.workers.dev/?ID="
+    # 1. Ayarlar
+    GIRIS_URL = "https://www.seir-sanduk.com/linkzagledane.php?parola=FaeagaDs3AdKaAf9"
+    WORKER_URL = "https://tv.seirsanduk.workers.dev/?ID="
     BASE_URL = "https://www.seir-sanduk.com/"
+    KLASOR_ADI = "playlist"
     
+    # Klasör yoksa oluştur
     if not os.path.exists(KLASOR_ADI):
         os.makedirs(KLASOR_ADI)
+        print(f"'{KLASOR_ADI}' klasörü oluşturuldu.")
 
-    scraper = cloudscraper.create_scraper(
-        browser={'browser': 'chrome', 'platform': 'windows', 'mobile': False}
-    )
+    scraper = cloudscraper.create_scraper()
     
     try:
+        # 2. Şifreyi (Token) Al
+        print("Siteye giriş yapılıyor...")
+        response = scraper.get(GIRIS_URL, timeout=20)
+        token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url)
+        
+        if not token_match:
+            print("Hata: Şifre (pass) bulunamadı.")
+            return
+            
+        token = token_match.group(1)
+        print(f"Güncel Şifre: {token}")
+
+        # 3. Kanalları Oku ve Ayrı Dosyalar Oluştur
         if not os.path.exists("kanallar.txt"):
+            print("Hata: kanallar.txt bulunamadı!")
             return
 
         with open("kanallar.txt", "r", encoding="utf-8") as f:
-            kanallar = [s.strip() for s in f.readlines() if ":" in s]
+            kanallar = f.readlines()
 
         for satir in kanallar:
-            kanal_adi, slug = satir.split(": ")
-            kanal_sayfa_url = f"{BASE_URL}{slug}"
-            
-            print(f"Tarama Başladı: {kanal_adi}")
-            
-            try:
-                response = scraper.get(kanal_sayfa_url, timeout=15)
-                html_icerik = response.text
-
-                # 1. STRATEJİ: pass= sonrasındaki en uzun diziyi ara
-                # 2. STRATEJİ: Tırnak içindeki 32-64 karakter arası karmaşık dizileri ara
-                # 3. STRATEJİ: Gizli input veya JS değişkenlerini tara
-                potansiyel_tokenlar = re.findall(r'[Pp]ass=["\']?([a-zA-Z0-9]{20,})', html_icerik)
-                genel_uzun_diziler = re.findall(r'["\']([a-zA-Z0-9]{30,64})["\']', html_icerik)
+            if ":" in satir:
+                kanal_adi, slug = satir.strip().split(": ")
                 
-                tum_adaylar = potansiyel_tokenlar + genel_uzun_diziler
+                # Dosya adını temizle (Boşlukları alt tire yap)
+                dosya_adi = kanal_adi.replace(" ", "_") + ".m3u"
+                dosya_yolu = os.path.join(KLASOR_ADI, dosya_adi)
                 
-                if tum_adaylar:
-                    # En uzun ve karmaşık görüneni seçiyoruz (Gerçek pasaport budur)
-                    token = max(tum_adaylar, key=len)
-                    kanal_id = slug.replace("-online", "")
-                    
-                    # PLAYER 11 + ENCODED
-                    ham_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
-                    guvenli_link = urllib.parse.quote(ham_link, safe='')
-                    final_url = f"{WORKER_URL}{guvenli_link}"
-                    
-                    temiz_ad = kanal_adi.replace(" ", "_")
-                    dosya_yolu = os.path.join(KLASOR_ADI, f"{temiz_ad}.m3u")
-                    
-                    with open(dosya_yolu, "w", encoding="utf-8") as f_kanal:
-                        f_kanal.write(final_url)
-                    
-                    print(f"-> {kanal_adi} OK: {token[:10]}...")
-                else:
-                    print(f"-> {kanal_adi} için pasaport bulunamadı.")
+                # Player 11'li link yapısı
+                # Not: Eğer Player 11 çalışmazsa aşağıyı {BASE_URL}{slug}?pass={token} yapabilirsin
+                final_link = f"{WORKER_URL}{BASE_URL}?player=11&id={slug.replace('-online','')}&pass={token}"
                 
-                time.sleep(1.5) # Engellenmemek için süreyi biraz artırdık
-                        
-            except Exception as e:
-                print(f"Hata ({kanal_adi}): {e}")
+                # Sadece linki içeren m3u dosyasını yaz
+                with open(dosya_yolu, "w", encoding="utf-8") as f_m3u:
+                    f_m3u.write(final_link)
+                
+                print(f"-> {dosya_adi} oluşturuldu.")
+        
+        print("\nİşlem Başarılı: Tüm kanallar 'playlist' klasörüne kaydedildi.")
 
     except Exception as e:
-        print(f"Sistem Hatası: {e}")
+        print(f"Hata: {e}")
 
 if __name__ == "__main__":
     guncelle()
