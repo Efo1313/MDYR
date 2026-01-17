@@ -1,41 +1,37 @@
-name: Sifre Guncelleyici
+name: Kanal Listesi Guncelleyici
 
 on:
-  workflow_dispatch: # Manuel çalıştırma butonu
   schedule:
-    - cron: '0 * * * *' # Her saat başı otomatik
-
-permissions:
-  contents: write
+    # Her saat başı çalışır
+    - cron: '0 * * * *'
+  workflow_dispatch: # Manuel çalıştırma butonu ekler
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Kodlari Cek
-        uses: actions/checkout@v4
+    - name: Depoyu Kontrol Et
+      uses: actions/checkout@v3
 
-      - name: Python Kur
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
+    - name: Python Kurulumu
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
 
-      - name: Kütüphaneleri Yukle
-        # Cloudscraper ve gerekli araçları buraya ekledik
-        run: pip install cloudscraper
+    - name: Gerekli Kütüphaneleri Kur
+      run: |
+        pip install cloudscraper
 
-      - name: Kodu Calistir
-        run: python main.py
+    - name: Guncelleme Kodunu Calistir
+      run: |
+        python main.py
 
-      - name: Degisiklikleri Kaydet
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          
-          # Dosyaları ekle
-          git add liste.m3u kanallar.txt
-          
-          # Değişiklik varsa kaydet, yoksa hata vermeden geç
-          git commit -m "Liste Guncellendi: $(date +'%d-%m-%Y %H:%M')" || echo "Degisiklik yok"
-          
-          git push
+    - name: Degisiklikleri GitHub'a Yukle
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        # Yeni klasörü ve içindeki m3u dosyasını takibe al
+        git add playlist/
+        # Eğer bir değişiklik varsa commit yap ve gönder
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Otomatik Liste Guncelleme" && git push)
