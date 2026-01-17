@@ -4,9 +4,9 @@ import os
 import urllib.parse
 
 def guncelle():
-    # 1. Ayarlar
+    # 1. YAPILANDIRMA
     GIRIS_URL = "https://www.seir-sanduk.com/linkzagledane.php?parola=FaeagaDs3AdKaAf9"
-    WORKER_URL = "https://tv.seirsanduk.workers.dev/?ID="
+    WORKER_URL = "https://tv.seirsanduk.workers.dev/?ID=" # HTTPS olarak sabitlendi
     BASE_URL = "https://www.seir-sanduk.com/"
     KLASOR_ADI = "playlist"
     
@@ -16,19 +16,20 @@ def guncelle():
     scraper = cloudscraper.create_scraper()
     
     try:
-        # 2. Uzun Pasaportu (Token) Al
-        print("Pasaport alınıyor...")
+        # 2. GÜNCEL PASAPORTU (TOKEN) ÇEK
+        print("Siteye giriş yapılıyor, güncel pasaport alınıyor...")
         response = scraper.get(GIRIS_URL, timeout=20)
+        # URL içindeki pass= parametresini yakala
         token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url)
         
         if not token_match:
-            print("Hata: Şifre bulunamadı.")
+            print("Hata: Pasaport kodu bulunamadı!")
             return
             
         token = token_match.group(1)
-        print(f"Güncel Şifre Alındı: {token[:10]}...")
+        print(f"Başarılı! Pasaport: {token[:15]}...")
 
-        # 3. Kanalları Oku ve Karakterli Linkleri Oluştur
+        # 3. KANALLARI İŞLE VE DOSYALARI OLUŞTUR
         if not os.path.exists("kanallar.txt"):
             print("Hata: kanallar.txt bulunamadı!")
             return
@@ -39,19 +40,21 @@ def guncelle():
         for satir in kanallar:
             if ":" in satir:
                 kanal_adi, slug = satir.strip().split(": ")
+                # Slug'dan kanal ID'sini temizle (Örn: bnt-4-online -> bnt-4)
                 kanal_id = slug.replace("-online", "")
                 
-                # ÇALIŞAN FORMATIN HAZIRLANMASI
-                # Önce iç linki oluşturuyoruz
+                # ÇALIŞAN FORMAT OLUŞTURMA:
+                # İç linki hazırla
                 ic_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
                 
-                # Linki karakterli (encoded) hale getiriyoruz
+                # İç linki URL Encode işleminden geçir (karakterli yap)
+                # safe='' parametresi tüm karakterleri kodlamasını sağlar
                 karakterli_ic_link = urllib.parse.quote(ic_link, safe='')
                 
-                # Worker ile birleştiriyoruz
+                # Worker URL ile birleştir
                 final_link = f"{WORKER_URL}{karakterli_ic_link}"
                 
-                # Dosya adını hazırla ve kaydet
+                # Dosya adını hazırla ve kaydet (Boşlukları alt tire yapar)
                 dosya_adi = kanal_adi.replace(" ", "_") + ".m3u"
                 dosya_yolu = os.path.join(KLASOR_ADI, dosya_adi)
                 
@@ -60,10 +63,10 @@ def guncelle():
                 
                 print(f"-> {dosya_adi} oluşturuldu.")
         
-        print("\nİşlem Başarılı: Tüm dosyalar çalışan formata güncellendi.")
+        print("\nTüm çalma listeleri 'playlist' klasöründe başarıyla güncellendi!")
 
     except Exception as e:
-        print(f"Hata: {e}")
+        print(f"Beklenmedik bir hata: {e}")
 
 if __name__ == "__main__":
     guncelle()
