@@ -6,7 +6,7 @@ import urllib.parse
 def guncelle():
     # 1. YAPILANDIRMA
     GIRIS_URL = "https://www.seir-sanduk.com/linkzagledane.php?parola=FaeagaDs3AdKaAf9"
-    WORKER_URL = "https://tv.seirsanduk.workers.dev/?ID=" # HTTPS olarak sabitlendi
+    WORKER_URL = "https://tv.seirsanduk.workers.dev/?ID="
     BASE_URL = "https://www.seir-sanduk.com/"
     KLASOR_ADI = "playlist"
     
@@ -19,7 +19,6 @@ def guncelle():
         # 2. GÜNCEL PASAPORTU (TOKEN) ÇEK
         print("Siteye giriş yapılıyor, güncel pasaport alınıyor...")
         response = scraper.get(GIRIS_URL, timeout=20)
-        # URL içindeki pass= parametresini yakala
         token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url)
         
         if not token_match:
@@ -27,9 +26,9 @@ def guncelle():
             return
             
         token = token_match.group(1)
-        print(f"Başarılı! Pasaport: {token[:15]}...")
+        print(f"Başarılı! Pasaport: {token[:10]}...")
 
-        # 3. KANALLARI İŞLE VE DOSYALARI OLUŞTUR
+        # 3. KANALLARI İŞLE VE AYRI DOSYALAR OLUŞTUR
         if not os.path.exists("kanallar.txt"):
             print("Hata: kanallar.txt bulunamadı!")
             return
@@ -40,30 +39,25 @@ def guncelle():
         for satir in kanallar:
             if ":" in satir:
                 kanal_adi, slug = satir.strip().split(": ")
-                # Slug'dan kanal ID'sini temizle (Örn: bnt-4-online -> bnt-4)
                 kanal_id = slug.replace("-online", "")
                 
-                # ÇALIŞAN FORMAT OLUŞTURMA:
-                # İç linki hazırla
+                # Link Oluşturma
                 ic_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
-                
-                # İç linki URL Encode işleminden geçir (karakterli yap)
-                # safe='' parametresi tüm karakterleri kodlamasını sağlar
                 karakterli_ic_link = urllib.parse.quote(ic_link, safe='')
-                
-                # Worker URL ile birleştir
                 final_link = f"{WORKER_URL}{karakterli_ic_link}"
                 
-                # Dosya adını hazırla ve kaydet (Boşlukları alt tire yapar)
-                dosya_adi = kanal_adi.replace(" ", "_") + ".m3u8"
+                # Dosya adını düzenle
+                dosya_adi = kanal_adi.replace(" ", "_") + ".m3u"
                 dosya_yolu = os.path.join(KLASOR_ADI, dosya_adi)
                 
+                # Dosya içeriğini yaz (İstediğin formatta)
                 with open(dosya_yolu, "w", encoding="utf-8") as f_m3u8:
-                    f_m3u8.write(final_link)
+                    f_m3u8.write("#EXTM3U\n") # Başlık
+                    f_m3u8.write(f"{final_link}\n") # Link
                 
                 print(f"-> {dosya_adi} oluşturuldu.")
         
-        print("\nTüm çalma listeleri 'playlist' klasöründe başarıyla güncellendi!")
+        print(f"\nTüm dosyalar '{KLASOR_ADI}' klasöründe hazır!")
 
     except Exception as e:
         print(f"Beklenmedik bir hata: {e}")
