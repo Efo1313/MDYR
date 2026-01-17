@@ -12,7 +12,7 @@ def guncelle():
     ANA_LISTE_ADI = "TUM_KANALLAR.m3u"
     
     # DOSYA İSİMLERİ (Senin verdiğin isimler)
-    KANAL_DOSYASI = "Kanallar.txt"
+    KANAL_DOSYASI = "kanallar.txt"
     LOGO_DOSYASI = "Tv logo.txt"
 
     if not os.path.exists(KLASOR_ADI):
