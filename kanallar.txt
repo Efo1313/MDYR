@@ -15,14 +15,14 @@ BTV STORY: btv-story-online
 DIEMA: hd-diema-hd-online
 DIEMA FAMILY: hd-diema-family-hd-online
 KINO NOVA: kino-nova-online
+STAR CRIME HD: hd-star-crime-hd-online
+STAR CHANNEL HD: hd-star-channel-hd-online
+STAR LIFE HD: hd-star-life-hd-online
 NAT GEO HD: hd-nat-geo-hd-online
 NAT GEO WILD HD: hd-nat-geo-wild-hd-online
 DISCOVERY CHANNEL HD: hd-discovery-channel-hd-online
 ID XTRA HD: hd-id-xtra-hd-online
 24 KITCHEN HD: hd-24-kitchen-hd-online
-STAR CRIME HD: hd-star-crime-hd-online
-STAR CHANNEL HD: hd-star-channel-hd-online
-STAR LIFE HD: hd-star-life-hd-online
 EUROSPORT 1 HD: hd-eurosport-1-hd-online
 EUROSPORT 2 HD: hd-eurosport-2-hd-online
 DIEMA SPORT HD: hd-diema-sport-hd-online
