@@ -57,7 +57,7 @@ AXN WHITE: axn-white-online
 EPIC DRAMA HD: hd-epic-drama-hd-online
 CODE FASHION TV HD: hd-code-fashion-tv-hd-online
 CARTOON NETWORK: cartoon-network-online
-DISNEY CHANNEL: hd-disney-channel-hd-online
+DISNEY CHANNEL: disney-channel-online
 E KIDS: e-kids-online
 FOOD NETWORK HD: hd-food-network-hd-online
 NICK JR: nick-jr-online
