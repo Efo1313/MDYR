@@ -50,7 +50,7 @@ EVROKOM: evrokom-online
 KANAL 3: kanal-3-online
 SKAT: skat-online
 TV 1: tv-1-online
-VTK: vtk-online
+BTK: vtk-online
 AXN: axn-online
 AXN BLACK: axn-black-online
 AXN WHITE: axn-white-online
