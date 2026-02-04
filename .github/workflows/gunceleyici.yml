@@ -8,29 +8,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # BU SATIR ÇOK ÖNEMLİ
 
     steps:
     - name: Depoyu Kontrol Et
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # Tüm geçmişi çekmesini sağlar
 
     - name: Python Kurulumu
       uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
-    - name: Gerekli Kütüphaneleri Kur
-      run: |
-        pip install cloudscraper
+    - name: Kütüphaneleri Kur
+      run: pip install cloudscraper
 
-    - name: Guncelleme Kodunu Calistir
-      run: |
-        python main.py
+    - name: Guncelle
+      run: python main.py
 
-    - name: Degisiklikleri GitHub'a Yukle
+    - name: GitHub'a Gönder
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        # Hata veren playlist/ yerine '.' kullanarak her şeyi kapsama alıyoruz
-        git add .
-        # Değişiklik kontrolü ve yükleme
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Otomatik Liste Guncelleme" && git push)
+        git add playlist/*.m3u8 || echo "Dosya bulunamadı"
+        git commit -m "Otomatik Güncelleme: $(date)" || echo "Değişiklik yok"
+        git push
