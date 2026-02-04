@@ -10,74 +10,72 @@ def guncelle():
     BASE_URL = "https://www.seir-sanduk.com/"
     KLASOR_ADI = "playlist"
     KANAL_DOSYASI = "kanallar.txt"
+    LOGO_DOSYASI = "Tv logo.txt"
+    ANA_LISTE_ADI = "TUM_KANALLAR.m3u"
 
-    # Klasörün oluşturulacağı tam yolu al
-    mevcut_dizin = os.getcwd()
-    klasor_yolu = os.path.join(mevcut_dizin, KLASOR_ADI)
+    if not os.path.exists(KLASOR_ADI):
+        os.makedirs(KLASOR_ADI)
 
-    # 1. Klasörü Oluşturma Denemesi
-    try:
-        if not os.path.exists(klasor_yolu):
-            os.makedirs(klasor_yolu)
-            print(f"Klasör oluşturuldu: {klasor_yolu}")
-        else:
-            print(f"Klasör zaten var: {klasor_yolu}")
-    except Exception as e:
-        print(f"KLASÖR OLUŞTURMA HATASI: {e}")
-        print("Dosyalar ana dizine yazılacak.")
-        klasor_yolu = mevcut_dizin
-
-    scraper = cloudscraper.create_scraper(browser={'browser': 'chrome','platform': 'windows','desktop': True})
+    scraper = cloudscraper.create_scraper()
     
     try:
-        # 2. Token Al
-        print("Siteden anahtar alınıyor...")
-        response = scraper.get(GIRIS_URL, timeout=30)
-        token_match = re.search(r'pass=([a-zA-Z0-9]{10,50})', response.text + response.url)
+        # 1. Logoları oku (TUM_KANALLAR için lazım)
+        logo_sozlugu = {}
+        if os.path.exists(LOGO_DOSYASI):
+            with open(LOGO_DOSYASI, "r", encoding="utf-8") as f:
+                for satir in f:
+                    if ":" in satir:
+                        p = satir.strip().split(":", 1)
+                        logo_sozlugu[p[0].strip()] = p[1].strip()
 
-        if not token_match:
-            print("HATA: Token alınamadı!")
-            return
+        # 2. Güncel Token'ı al
+        print("Siteden güncel anahtar alınıyor...")
+        response = scraper.get(GIRIS_URL, timeout=20)
+        token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url)
+        if not token_match: return
         token = token_match.group(1)
-        print(f"GÜNCEL TOKEN: {token}")
 
-        # 3. Kanalları Oku
-        if not os.path.exists(KANAL_DOSYASI):
-            print(f"HATA: {KANAL_DOSYASI} dosyası bu konumda yok: {mevcut_dizin}")
-            return
-
+        # 3. Kanalları oku
         with open(KANAL_DOSYASI, "r", encoding="utf-8") as f:
-            satirlar = f.readlines()
+            kanallar = f.readlines()
 
-        sayac = 0
-        for satir in satirlar:
-            satir = satir.strip()
-            if not satir or ":" not in satir: continue
-            
-            parca = satir.split(":", 1)
-            kanal_adi = parca[0].strip()
-            kanal_id = parca[1].strip().replace("-online", "")
-            
-            player_no = "12" if "hd" in kanal_id.lower() else "11"
-            
-            ic_link = f"{BASE_URL}?player={player_no}&id={kanal_id}&pass={token}"
-            encoded_link = urllib.parse.quote(ic_link, safe='')
-            final_link = f"{WORKER_URL}{encoded_link}"
-            
-            temiz_ad = "".join([c for c in kanal_adi if c.isalnum() or c in (' ', '_')]).rstrip()
-            dosya_adi = f"{temiz_ad}.m3u8"
-            tam_dosya_yolu = os.path.join(klasor_yolu, dosya_adi)
-            
-            with open(tam_dosya_yolu, "w", encoding="utf-8") as f_tekil:
-                f_tekil.write(final_link)
-            
-            print(f">> YAZILDI: {dosya_adi}")
-            sayac += 1
+        # --- ANA LİSTE (TUM_KANALLAR.m3u) - AYNI KALACAK ---
+        ana_liste_yolu = os.path.join(KLASOR_ADI, ANA_LISTE_ADI)
+        with open(ana_liste_yolu, "w", encoding="utf-8") as f_ana:
+            f_ana.write("#EXTM3U\n")
 
-        print(f"\nİŞLEM TAMAMLANDI! {sayac} dosya hazır.")
+            for satir in kanallar:
+                satir = satir.strip()
+                if not satir or ":" not in satir: continue
+                
+                parca = satir.split(":", 1)
+                kanal_adi = parca[0].strip()
+                slug = parca[1].strip()
+                kanal_id = slug.replace("-online", "")
+                
+                # Linki Oluştur
+                ic_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
+                encoded_link = urllib.parse.quote(ic_link, safe='')
+                final_link = f"{WORKER_URL}{encoded_link}"
+                
+                # A) TUM_KANALLAR.m3u (Formatlı Yazım)
+                logo_url = logo_sozlugu.get(kanal_adi, "")
+                f_ana.write(f'#EXTINF:-1 tvg-logo="{logo_url}",{kanal_adi}\n')
+                f_ana.write(f"{final_link}\n")
+
+                # B) TEKİL KANAL DOSYALARI (.m3u8 ve SADECE SAF LİNK)
+                temiz_ad = "".join([c for c in kanal_adi if c.isalnum() or c in (' ', '_')]).rstrip()
+                tekil_dosya_yolu = os.path.join(KLASOR_ADI, f"{temiz_ad}.m3u8")
+                
+                with open(tekil_dosya_yolu, "w", encoding="utf-8") as f_tekil:
+                    f_tekil.write(final_link) # İÇİNDE SADECE SAF ADRES VAR
+
+            print(f"İşlem tamamlandı!")
+            print(f"- {ANA_LISTE_ADI} (Formatlı liste güncellendi)")
+            print(f"- Tekil .m3u8 dosyaları (Saf adres olarak oluşturuldu)")
 
     except Exception as e:
-        print(f"SİSTEM HATASI: {e}")
+        print(f"Hata: {e}")
 
-if __name__ == "__main__":
+if name == "main":
     guncelle()
