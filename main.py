@@ -16,10 +16,11 @@ def guncelle():
     if not os.path.exists(KLASOR_ADI):
         os.makedirs(KLASOR_ADI)
 
-    scraper = cloudscraper.create_scraper()
+    # Scraper oluşturuluyor
+    scraper = cloudscraper.create_scraper(browser={'browser': 'chrome','platform': 'windows','desktop': True})
     
     try:
-        # 1. Logoları oku (TUM_KANALLAR için lazım)
+        # 1. Logoları oku
         logo_sozlugu = {}
         if os.path.exists(LOGO_DOSYASI):
             with open(LOGO_DOSYASI, "r", encoding="utf-8") as f:
@@ -30,16 +31,27 @@ def guncelle():
 
         # 2. Güncel Token'ı al
         print("Siteden güncel anahtar alınıyor...")
-        response = scraper.get(GIRIS_URL, timeout=20)
-        token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url)
-        if not token_match: return
+        response = scraper.get(GIRIS_URL, timeout=30)
+        
+        # Token yakalamayı garantiye alalım (Hem URL hem içerik)
+        token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url + response.text)
+        
+        if not token_match:
+            print("HATA: Token bulunamadı!")
+            return
+            
         token = token_match.group(1)
+        print(f"Token bulundu: {token}")
 
         # 3. Kanalları oku
+        if not os.path.exists(KANAL_DOSYASI):
+            print(f"HATA: {KANAL_DOSYASI} bulunamadı!")
+            return
+            
         with open(KANAL_DOSYASI, "r", encoding="utf-8") as f:
             kanallar = f.readlines()
 
-        # --- ANA LİSTE (TUM_KANALLAR.m3u) - AYNI KALACAK ---
+        # --- ANA LİSTE OLUŞTURMA ---
         ana_liste_yolu = os.path.join(KLASOR_ADI, ANA_LISTE_ADI)
         with open(ana_liste_yolu, "w", encoding="utf-8") as f_ana:
             f_ana.write("#EXTM3U\n")
@@ -53,12 +65,15 @@ def guncelle():
                 slug = parca[1].strip()
                 kanal_id = slug.replace("-online", "")
                 
+                # HD kanallarda donma olmaması için player 12 önerilir
+                player_no = "12" if "hd" in kanal_id.lower() else "11"
+                
                 # Linki Oluştur
-                ic_link = f"{BASE_URL}?player=11&id={kanal_id}&pass={token}"
+                ic_link = f"{BASE_URL}?player={player_no}&id={kanal_id}&pass={token}"
                 encoded_link = urllib.parse.quote(ic_link, safe='')
                 final_link = f"{WORKER_URL}{encoded_link}"
                 
-                # A) TUM_KANALLAR.m3u (Formatlı Yazım)
+                # A) TUM_KANALLAR.m3u Yazımı
                 logo_url = logo_sozlugu.get(kanal_adi, "")
                 f_ana.write(f'#EXTINF:-1 tvg-logo="{logo_url}",{kanal_adi}\n')
                 f_ana.write(f"{final_link}\n")
@@ -68,14 +83,13 @@ def guncelle():
                 tekil_dosya_yolu = os.path.join(KLASOR_ADI, f"{temiz_ad}.m3u8")
                 
                 with open(tekil_dosya_yolu, "w", encoding="utf-8") as f_tekil:
-                    f_tekil.write(final_link) # İÇİNDE SADECE SAF ADRES VAR
+                    f_tekil.write(final_link)
 
-            print(f"İşlem tamamlandı!")
-            print(f"- {ANA_LISTE_ADI} (Formatlı liste güncellendi)")
-            print(f"- Tekil .m3u8 dosyaları (Saf adres olarak oluşturuldu)")
+            print(f"İşlem başarıyla tamamlandı!")
 
     except Exception as e:
-        print(f"Hata: {e}")
+        print(f"Hata oluştu: {e}")
 
-if_name_== "_main_":
+# DOĞRU GİRİŞ SATIRI (Alt tirelere ve boşluklara dikkat):
+if __name__ == "__main__":
     guncelle()
