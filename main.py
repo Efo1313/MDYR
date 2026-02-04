@@ -77,5 +77,5 @@ def guncelle():
     except Exception as e:
         print(f"Hata: {e}")
 
-if_name_== "_main_":
+if_name_=="_main_":
     guncelle()
