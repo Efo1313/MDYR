@@ -24,7 +24,7 @@ def guncelle():
         print(f"TOKEN: {token}")
 
         if not os.path.exists(KANAL_DOSYASI):
-            print(f"HATA: {KANAL_DOSYASI} dosyası yok!")
+            print(f"HATA: {KANAL_DOSYASI} bulunamadı!")
             return
             
         with open(KANAL_DOSYASI, "r", encoding="utf-8") as f:
@@ -37,13 +37,12 @@ def guncelle():
             parca = satir.split(":", 1)
             kanal_adi = parca[0].strip()
             kanal_id = parca[1].strip().replace("-online", "")
-            
             player_no = "12" if "hd" in kanal_id.lower() else "11"
             
             ic_link = f"{BASE_URL}?player={player_no}&id={kanal_id}&pass={token}"
             final_link = f"{WORKER_URL}{urllib.parse.quote(ic_link, safe='')}"
             
-            # KLASÖRÜ KALDIRDIK: Doğrudan ana dizine yazıyoruz
+            # Klasör kullanmıyoruz, direkt ana dizine yazıyoruz
             temiz_ad = "".join([c for c in kanal_adi if c.isalnum() or c in (' ', '_')]).rstrip()
             dosya_adi = f"{temiz_ad}.m3u8"
             
@@ -52,7 +51,7 @@ def guncelle():
             
             print(f"DOSYA OLUŞTU: {dosya_adi}")
 
-        print("\nİşlem bitti. Sayfayı yenileyip kontrol et.")
+        print("\nİşlem bitti. Dosyalar ana dizinde.")
 
     except Exception as e:
         print(f"Hata: {e}")
