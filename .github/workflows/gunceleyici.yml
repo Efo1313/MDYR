@@ -1,14 +1,14 @@
 name: Kanal Listesi Guncelleyici
 
 on:
+  workflow_dispatch: 
   schedule:
-    - cron: '0 * * * *' # Her saat başı
-  workflow_dispatch: # Manuel çalıştırma butonu
+    - cron: '0 * * * *'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # GitHub'a yazma izni verdiğimizi burada kesinleştiriyoruz
+    # Yazma izni olmayan bir Action asla dosya kaydedemez
     permissions:
       contents: write
 
@@ -16,31 +16,28 @@ jobs:
     - name: Depoyu Kontrol Et
       uses: actions/checkout@v3
       with:
-        persist-credentials: true # Token kullanımını aktif eder
+        token: ${{ secrets.GITHUB_TOKEN }} # Kendi anahtarını kullanmasını sağla
 
     - name: Python Kurulumu
       uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
-    - name: Gerekli Kütüphaneleri Kur
+    - name: Kütüphaneleri Kur
       run: pip install cloudscraper
 
-    - name: Guncelleme Kodunu Calistir
+    - name: Guncelle
       run: python main.py
 
-    - name: Degisiklikleri GitHub'a Yukle
+    - name: GitHub'a Zorla Gönder
       run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        
-        # Sadece playlist klasörünü ve içindeki m3u8 dosyalarını ekle
-        git add playlist/*.m3u8 || echo "Eklenecek yeni dosya bulunamadı"
-        
-        # Değişiklik varsa kaydet ve gönder
-        if [ -n "$(git status --porcelain)" ]; then
-          git commit -m "Otomatik Kanal Güncelleme: $(date)"
-          git push
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git add --all
+        # Eğer kanallar.m3u oluşmuşsa commit yap
+        if git diff --staged --quiet; then
+          echo "Değişiklik yok."
         else
-          echo "Herhangi bir değişiklik yok, push yapılmadı."
+          git commit -m "Liste guncellendi: $(date)"
+          git push origin main
         fi
