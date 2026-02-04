@@ -5,7 +5,6 @@ import urllib.parse
 
 def guncelle():
     # --- AYARLAR ---
-    # Bu URL bazen değişebilir, eğer hata alırsan ana sayfadan yeni parola linkini kontrol etmelisin.
     GIRIS_URL = "https://www.seir-sanduk.com/linkzagledane.php?parola=FaeagaDs3AdKaAf9"
     WORKER_URL = "https://tv.seirsanduk.workers.dev/?ID="
     BASE_URL = "https://www.seir-sanduk.com/"
@@ -17,7 +16,7 @@ def guncelle():
     if not os.path.exists(KLASOR_ADI):
         os.makedirs(KLASOR_ADI)
 
-    # Cloudflare engellerini aşmak için gelişmiş scraper
+    # Bot engellerini aşmak için tarayıcı gibi davranıyoruz
     scraper = cloudscraper.create_scraper(
         browser={
             'browser': 'chrome',
@@ -40,18 +39,24 @@ def guncelle():
         print("Siteden güncel anahtar (token) alınıyor...")
         response = scraper.get(GIRIS_URL, timeout=20)
         
-        # Regex İyileştirmesi: Önce URL'de, sonra sayfa içeriğinde ara. 
-        # [^&"'\s]+ ifadesi & veya tırnak görene kadar her şeyi alır (eksik karakteri önler).
-        token_match = re.search(r'pass=([^&"\'\s]+)', response.url)
+        # Token Yakalama Mantığı (Geliştirildi)
+        token = None
+        
+        # Önce yönlendirilen URL'de "pass=" ara
+        token_match = re.search(r'pass=([^&"\'\s>]+)', response.url)
+        
         if not token_match:
-            token_match = re.search(r'pass=([^&"\'\s]+)', response.text)
+            # URL'de yoksa sayfa içeriğinde ara
+            token_match = re.search(r'pass=([^&"\'\s>]+)', response.text)
 
-        if not token_match:
-            print("HATA: Token bulunamadı! Site yapısı değişmiş olabilir.")
+        if token_match:
+            token = token_match.group(1)
+            # Eğer token başında gereksiz karakterler (örneğin player id) kalırsa temizle
+            # Genelde pass kodu uzun bir harf/sayı dizisidir
+            print(f"Token bulundu: {token}")
+        else:
+            print("HATA: Token bulunamadı! Site koruması aktif olabilir.")
             return
-
-        token = token_match.group(1)
-        print(f"Başarıyla alınan Token: {token}")
 
         # 3. Kanalları oku
         if not os.path.exists(KANAL_DOSYASI):
@@ -70,40 +75,36 @@ def guncelle():
                 satir = satir.strip()
                 if not satir or ":" not in satir: continue
                 
-                # Kanal Dosyası Formatı: Kanal Adı : ID : PlayerNo (Opsiyonel)
-                # Örn: BNT 1 : hd-bnt-1-hd : 11
                 parca = satir.split(":")
                 kanal_adi = parca[0].strip()
                 kanal_id = parca[1].strip().replace("-online", "")
                 
-                # Eğer dosyada player belirtilmemişse varsayılan 11 kullan
+                # Eğer kanallar.txt içinde player belirtilmemişse 11 kullan
                 player_no = parca[2].strip() if len(parca) > 2 else "11"
                 
-                # Linki Oluştur (Parametre sıralaması önemli olabilir)
+                # Linki Oluştur
                 ic_link = f"{BASE_URL}?player={player_no}&id={kanal_id}&pass={token}"
                 
-                # Worker için URL encoding
+                # Worker uyumlu URL encoding (safe parametresi boş bırakıldı)
                 encoded_link = urllib.parse.quote(ic_link, safe='')
                 final_link = f"{WORKER_URL}{encoded_link}"
                 
-                # A) M3U Listesine Yaz
+                # A) TUM_KANALLAR.m3u Yazımı
                 logo_url = logo_sozlugu.get(kanal_adi, "")
                 f_ana.write(f'#EXTINF:-1 tvg-logo="{logo_url}",{kanal_adi}\n')
                 f_ana.write(f"{final_link}\n")
 
-                # B) Tekil Dosyaları Yaz
+                # B) Tekil Dosyalar
                 temiz_ad = "".join([c for c in kanal_adi if c.isalnum() or c in (' ', '_')]).rstrip()
                 tekil_dosya_yolu = os.path.join(KLASOR_ADI, f"{temiz_ad}.m3u8")
                 
                 with open(tekil_dosya_yolu, "w", encoding="utf-8") as f_tekil:
                     f_tekil.write(final_link)
 
-            print(f"\nİşlem Başarılı!")
-            print(f"- Toplam {len(kanallar)} kanal güncellendi.")
-            print(f"- Liste: {ana_liste_yolu}")
+            print(f"\nİşlem Başarılı! {len(kanallar)} kanal güncellendi.")
 
     except Exception as e:
-        print(f"Beklenmedik bir hata oluştu: {e}")
+        print(f"Hata oluştu: {e}")
 
 if __name__ == "__main__":
     guncelle()
