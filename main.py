@@ -2,93 +2,78 @@ import re
 import os
 import urllib.parse
 import sys
-import time
 from curl_cffi import requests
 
 def guncelle():
+    # Dosya yolları
     mevcut_dizin = os.path.dirname(os.path.abspath(__file__))
+    logo_dosyasi = os.path.join(mevcut_dizin, "TV logosu.txt")
+    kanal_dosyasi = os.path.join(mevcut_dizin, "kanallar.txt")
     cikti_dosyasi = os.path.join(mevcut_dizin, "kanallar.m3u")
-    input_dosyasi = os.path.join(mevcut_dizin, "kanallar.txt")
     
-    # Seir-Sanduk URL Yapıları
     GIRIS_URL = "https://www.seir-sanduk.com/linkzagledane.php?parola=FaeagaDs3AdKaAf9"
     WORKER_URL = "https://tv.seirsanduk.workers.dev/?ID="
     BASE_URL = "https://www.seir-sanduk.com/"
 
-    print("[*] Bağlantı girişimi başlatılıyor...")
-
+    print("[*] Logolar yükleniyor...")
+    logolar = {}
+    if os.path.exists(logo_dosyasi):
+        with open(logo_dosyasi, "r", encoding="utf-8") as f:
+            for satir in f:
+                if ":" in satir:
+                    ad, logo = satir.split(":", 1)
+                    logolar[ad.strip().lower()] = logo.strip()
+    
+    print("[*] Siteye bağlanılıyor (Token alınıyor)...")
     headers = {
-        "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "bg-BG,bg;q=0.9,en-US;q=0.8,tr;q=0.6",
-        "Referer": "https://www.seir-sanduk.com/",
-        "Connection": "keep-alive",
-        "Upgrade-Insecure-Requests": "1"
+        "User-Agent": "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+        "Referer": "https://www.seir-sanduk.com/"
     }
 
     try:
-        # GitHub engeline karşı 3 deneme yapalım
-        response = None
-        for i in range(3):
-            print(f"[*] Deneme {i+1}/3...")
-            try:
-                response = requests.get(
-                    GIRIS_URL, 
-                    impersonate="chrome120", 
-                    headers=headers, 
-                    timeout=20
-                )
-                if response.status_code == 200: break
-            except Exception as e:
-                print(f"[-] Deneme başarısız: {e}")
-                time.sleep(2)
-
-        if not response or response.status_code != 200:
-            print(f"[-] KRİTİK HATA: Site hala 403 veriyor. GitHub IP'si tamamen bloklanmış.")
-            print("[!] ÇÖZÜM: Bu işlemi telefonda Pydroid 3 uygulamasıyla yapmalısın.")
-            sys.exit(1)
-
-        content = response.text
-        token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url + content)
+        # Pydroid'de çalıştırırken 403 almazsın
+        response = requests.get(GIRIS_URL, impersonate="chrome120", headers=headers, timeout=20)
         
+        if response.status_code != 200:
+            print(f"[-] Hata: Siteye girilemedi. Kod: {response.status_code}")
+            return
+
+        token_match = re.search(r'pass=([a-zA-Z0-9]+)', response.url + response.text)
         if not token_match:
-            print("[-] HATA: Token bulunamadı.")
-            sys.exit(1)
+            print("[-] Hata: Token bulunamadı.")
+            return
             
         token = token_match.group(1)
-        print(f"[+] Token Başarıyla Alındı: {token}")
+        print(f"[+] Bağlantı Başarılı! Token: {token}")
 
-        # Kanallar.txt dosyasını kontrol et
-        if not os.path.exists(input_dosyasi):
-            print(f"[-] HATA: {input_dosyasi} bulunamadı!")
-            sys.exit(1)
+        if not os.path.exists(kanal_dosyasi):
+            print(f"[-] Hata: {kanal_dosyasi} bulunamadı!")
+            return
 
-        with open(input_dosyasi, "r", encoding="utf-8") as f:
-            satirlar = f.readlines()
+        with open(kanal_dosyasi, "r", encoding="utf-8") as f:
+            kanallar = f.readlines()
 
-        kanal_sayisi = 0
         with open(cikti_dosyasi, "w", encoding="utf-8") as f_out:
             f_out.write("#EXTM3U\n")
-            for satir in satirlar:
-                satir = satir.strip()
-                if not satir or ":" not in satir: continue
-                
-                ad, slug = satir.split(":", 1)
+            for satir in kanallar:
+                if ":" not in satir: continue
+                ad_orj, slug = satir.split(":", 1)
+                ad = ad_orj.strip()
                 kanal_id = slug.strip().replace("-online", "")
+                
+                # Logoyu bul (küçük harfe çevirerek eşleştir)
+                logo_linki = logolar.get(ad.lower(), "")
+                
                 player = "12" if "hd" in kanal_id.lower() else "11"
-                
                 param_str = f"{BASE_URL}?player={player}&id={kanal_id}&pass={token}"
-                encoded_param = urllib.parse.quote(param_str, safe='')
-                link = f"{WORKER_URL}{encoded_param}"
+                link = f"{WORKER_URL}{urllib.parse.quote(param_str, safe='')}"
                 
-                f_out.write(f'#EXTINF:-1 tvg-logo="",{ad.strip()}\n{link}\n')
-                kanal_sayisi += 1
+                f_out.write(f'#EXTINF:-1 tvg-logo="{logo_linki}",{ad}\n{link}\n')
 
-        print(f"[+] İŞLEM TAMAM! {kanal_sayisi} kanal güncellendi.")
+        print(f"[+] BİTTİ! {cikti_dosyasi} dosyası başarıyla oluşturuldu.")
 
     except Exception as e:
-        print(f"[!] BEKLENMEDİK HATA: {str(e)}")
-        sys.exit(1)
+        print(f"[!] Hata: {str(e)}")
 
 if __name__ == "__main__":
     guncelle()
